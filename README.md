@@ -5,7 +5,7 @@
 每一篇固定交付四样东西：**可运行的源码**、**已训练的权重**、**和原文并排的结果图**，
 以及一份**写清哪里做不到的差异说明**。
 
-站点：<https://alice-p197.github.io/paper-repro-lab/>
+站点：<https://alice-p197.github.io/literature-archive/>
 
 ---
 
