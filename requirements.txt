@@ -1,0 +1,9 @@
+# CPU-only 复现所需的最小依赖
+# 实测环境：Python 3.14.2 / torch 2.11.0+cpu / numpy 2.4.1 / scipy 1.17.0 / matplotlib 3.10.8
+torch>=2.0
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+
+# 可选：图形界面（gui_app.py）。不装也能跑全部 CLI 脚本。
+# PyQt5>=5.15

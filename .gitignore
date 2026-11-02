@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# 运行时产物
+outputs/*/
+!outputs/*.png
+*.log
+*.csv
+!docs/**/*.csv
+
+# 打包
+build/
+dist/
+*.spec
+*.exe
