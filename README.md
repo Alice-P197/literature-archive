@@ -1,6 +1,6 @@
 # 论文复现实验室 · Paper Repro Lab
 
-把机器学习、计算成像与光学设计方向的论文，拆成可运行、可修改、可验证的代码档案。
+按研究方向归档的论文复现：光学计算、超表面、逆向设计、代理模型、计算成像……每个方向下都是一份可运行、可修改、可验证的代码档案。
 
 每一篇固定交付四样东西：**可运行的源码**、**已训练的权重**、**和原文并排的结果图**，
 以及一份**写清哪里做不到的差异说明**。
@@ -13,8 +13,8 @@
 
 | # | 论文 | 方向 | 交付 |
 |---|---|---|---|
-| 01 | **MetaE-former**：用邻域注意力代理模型设计大尺寸超表面<br>PhotoniX 2026 | 神经网络 + 逆向设计 | Python 源码、3 个预训练权重、Fig.3 / Fig.6 复现图、桌面端 GUI、零基础教程 |
-| 02 | **Optical generative models**：让光在自由空间里完成一次生成<br>Nature 644, 903–911 (2025) | 光学计算 + 生成模型 | MATLAB 源码（15 个脚本）、两套原型权重、四组实验日志 |
+| 01 | **Optical generative models**：让光在自由空间里完成一次生成<br>Nature 644, 903–911 (2025) | 光学计算 · 生成模型 | MATLAB 源码（15 个脚本）、两套原型权重、四组实验日志 |
+| 02 | **MetaE-former**：用邻域注意力代理模型设计大尺寸超表面<br>PhotoniX 7:69 (2026) | 超表面 · 逆向设计 · 代理模型 | Python 源码、3 个预训练权重、Fig.3 / Fig.6 复现图、桌面端 GUI、零基础教程 |
 
 ---
 
@@ -22,12 +22,12 @@
 
 ```
 ├── docs/                              站点（GitHub Pages 源目录）
-│   ├── index.html                     门户：项目卡片由数据渲染
+│   ├── index.html                     门户：卡片 + 方向筛选 + 搜索，全部由数据渲染
 │   ├── guide.html                     复现方法论（面向读者）
 │   ├── reproductions/
 │   │   ├── _template.html             空白项目页骨架
-│   │   ├── metae-former.html          项目 01 详情页
-│   │   └── optical-generative-models.html   项目 02 详情页
+│   │   ├── optical-generative-models.html   项目 01 详情页
+│   │   └── metae-former.html          项目 02 详情页
 │   ├── assets/
 │   │   ├── css/site.css               唯一样式表
 │   │   ├── js/site.js                 唯一脚本
@@ -44,14 +44,14 @@
 ├── TUTORIAL.md                        零基础代码接手教程（约 970 行）
 │
 └── reproductions/
-    └── optical-generative-models/     项目 02 的 MATLAB 源码与原型权重
+    └── optical-generative-models/     项目 01 的 MATLAB 源码与原型权重
 ```
 
 ---
 
 ## 快速上手
 
-### 项目 01 · MetaE-former
+### 项目 02 · MetaE-former
 
 ```bash
 pip install -r requirements.txt
@@ -68,7 +68,7 @@ python gui_app.py
 
 首次接手建议先读 **[TUTORIAL.md](TUTORIAL.md)**：从「张量是什么」讲到「怎么加一个新的目标光场」，所有命令与数值都实测过。
 
-### 项目 02 · 光学生成模型
+### 项目 01 · 光学生成模型
 
 ```matlab
 setenv('OGEN_DATASET','mnist');   train_prototypes     % 阶段一，约 18 分钟
@@ -81,9 +81,11 @@ setenv('OGEN_DATASET','mnist');   generate_mixture      % 阶段二，约 1 分�
 
 站点的结构就是为这件事准备的，三个动作：
 
-1. 在 `docs/assets/data/projects.js` 加一条记录 —— 门户卡片自动出现
+1. 在 `docs/assets/data/projects.js` 的 `REPRODUCTIONS` 末尾追加一条记录 —— 卡片、方向按钮、搜索索引自动出现
 2. 复制 `docs/reproductions/_template.html` 为 `<slug>.html`，只填正文
 3. 图片放 `docs/assets/img/<slug>/`，宽 ≤ 1300 px
+
+新方向在 `window.CATEGORIES` 里加一行即可；没有复现的方向不显示按钮，等第一篇归档后自动出现。
 
 站点维护的详细约定（章节顺序、差异表格式、制图要求、发布检查清单、打包方式）见 `MAINTAINING.md`。
 

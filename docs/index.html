@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>论文复现实验室 · Paper Repro Lab</title>
-<meta name="description" content="把机器学习、计算成像与光学设计方向的论文拆成可运行、可修改、可验证的代码档案：源码、预训练权重、复现结果、逐项差异说明与上手教程。">
+<meta name="description" content="按研究方向归档的论文复现索引：光学计算、超表面、逆向设计、代理模型、计算成像等。每篇给出可运行源码、权重、与原文并排的结果，以及逐项差异说明。">
 <meta property="og:title" content="论文复现实验室 · Paper Repro Lab">
-<meta property="og:description" content="每篇论文一份可运行时档案：源码、权重、结果、差异说明。">
+<meta property="og:description" content="按方向归档的论文复现索引，每篇一份可运行档案。">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/css/site.css">
@@ -21,7 +21,6 @@
     </a>
     <div class="nav-links">
       <a href="index.html#archive" class="active">档案</a>
-      <a href="index.html#download">下载</a>
       <a href="guide.html">方法</a>
       <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -37,46 +36,11 @@
       <span class="dot"></span>
       复现档案 · 持续更新
     </div>
-    <h1>把论文里的方法<br>拆成能跑、能改、<em>能验证</em>的代码</h1>
+    <h1>每篇论文，一份<br>能跑、能改、<em>能验证</em>的复现</h1>
     <p class="lede">
-      这里收录我逐篇复现的论文。每篇固定交付同样四样东西：<strong>可运行的源码</strong>、
-      <strong>已训练的权重</strong>、<strong>和原文并排的结果图</strong>，
-      以及一份<strong>写清哪里做不到的差异说明</strong>。
-      不是演示视频，也不是截图拼贴——是在自己机器上运行就能得到同一张图的东西。
+      按研究方向归档。卡片只给结论，方法拆解、与原文并排的结果、逐项差异说明都在各自的复现页里。
     </p>
-    <div class="cta">
-      <a class="btn btn-primary" href="#archive">
-        浏览复现档案
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
-      </a>
-      <a class="btn btn-ghost" href="guide.html">复现方法</a>
-      <a class="btn btn-ghost" href="#download">下载代码包</a>
-    </div>
-    <div class="chips">
-      <span class="chip">源码 + 权重 + 结果</span>
-      <span class="chip">逐项差异说明</span>
-      <span class="chip">MIT License</span>
-      <span class="chip">更新于 2026-11-02</span>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="n" data-count="2">0</div>
-        <div class="k">已收录复现<br>均含完整代码与权重</div>
-      </div>
-      <div class="stat">
-        <div class="n" data-count="0.112" data-dec="3">0</div>
-        <div class="k">代理模型归一化 MAE<br>论文区间 0.037–0.114</div>
-      </div>
-      <div class="stat">
-        <div class="n" data-count="38.4" data-suffix="k" data-dec="1">0</div>
-        <div class="k">流式预训练样本<br>MetaE-former 训练集</div>
-      </div>
-      <div class="stat">
-        <div class="n" data-count="10">0</div>
-        <div class="k">条件生成类别<br>MNIST / Fashion-MNIST</div>
-      </div>
-    </div>
+    <div class="meta-line" id="metaline">2 篇 · 5 个方向</div>
   </div>
 </header>
 
@@ -86,183 +50,37 @@
     <div class="shead rv">
       <div class="kicker"><span class="num">01</span><span class="bar"></span>Archive</div>
       <h2>复现档案</h2>
-      <p>每张卡片对应一份独立的复现记录。点进去能看到方法拆解、与原文并排的结果，以及可直接下载的代码包。</p>
     </div>
 
-    <div class="pgrid rv" id="pgrid">
+    <div class="toolbar rv">
+      <label class="searchbox">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
+        <input id="q" type="search" placeholder="搜索标题、关键词、期刊…　按 / 聚焦" aria-label="搜索复现档案" autocomplete="off">
+      </label>
+      <div class="catbar" id="cats" role="group" aria-label="按研究方向筛选"></div>
+    </div>
+
+    <div class="resultbar rv">
+      <span id="count"></span>
+      <button class="reset" id="reset" type="button" hidden>清除筛选</button>
+    </div>
+
+    <div class="pgrid" id="pgrid">
       <noscript>
-        <a class="pcard" href="reproductions/metae-former.html">
-          <div class="body"><h3>MetaE-former：用邻域注意力代理模型设计大尺寸超表面</h3>
-          <p class="sum">PhotoniX 2026 · 已复现</p></div>
-        </a>
         <a class="pcard" href="reproductions/optical-generative-models.html">
           <div class="body"><h3>光学生成模型：让光在自由空间里完成一次生成</h3>
           <p class="sum">Nature 644 · 2025 · 已复现</p></div>
         </a>
+        <a class="pcard" href="reproductions/metae-former.html">
+          <div class="body"><h3>MetaE-former：用邻域注意力代理模型设计大尺寸超表面</h3>
+          <p class="sum">PhotoniX 7:69 · 2026 · 已复现</p></div>
+        </a>
       </noscript>
     </div>
 
-    <div class="band rv" style="margin-top:26px">
-      <div>
-        <h4>一眼看清差距</h4>
-        <p>每篇都有一张「论文做法 / 本复现做法」的逐项对照表，包括网络规模、数据来源、求解器口径。不一致的地方不藏。</p>
-      </div>
-      <div>
-        <h4>指标可复算</h4>
-        <p>评估脚本、训练历史、CSV 都在代码包里。页面上写的每个数字，都能自己跑出同一个。</p>
-      </div>
-      <div>
-        <h4>结构统一</h4>
-        <p>所有项目页遵循同一套章节：基础、论文、结果、方法、上手、下载、引用。换一篇论文，阅读路径不变。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 02 STANDARD ================= -->
-<section id="standard">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">02</span><span class="bar"></span>Standard</div>
-      <h2>一次复现要过四道关</h2>
-      <p>这四件事决定了「复现」和「照着论文画一张图」的区别。走完四关才会归档进上面的列表。</p>
-    </div>
-
-    <div class="rv">
-      <div class="step">
-        <div class="num">01</div>
-        <div>
-          <h4>把物理链路写成可微的</h4>
-          <p>论文的正演往往是不可微的全波求解器。复现时必须换一条<strong>能求梯度的等效链路</strong>，
-          并说清它保留了什么、丢掉了什么。这一步决定后面所有逆向设计能不能做。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="num">02</div>
-        <div>
-          <h4>训练能被验证的代理模型</h4>
-          <p>真值数据必须和训练时用同一套物理口径，否则验证集上的低误差是自欺。
-          同时给出一条<strong>基线对比</strong>：随机结构、均值预测，或者原文报告的数字。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="num">03</div>
-        <div>
-          <h4>逆向结果要放回物理里验</h4>
-          <p>设计出的结构，用<strong>高分辨率前向传播</strong>再算一遍光场，而不是只看代理模型的输出。
-          代理预测漂亮但实场是散斑——这种情况必须写出来。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="num">04</div>
-        <div>
-          <h4>差异逐条标注</h4>
-          <p>哪些是等价替换、哪些是精度损失、哪些根本没做。用表格列出，并给出这个差距对结论的影响。
-          读者据此判断这份复现能支撑多强的结论。</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 03 ROADMAP ================= -->
-<section id="roadmap">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">03</span><span class="bar"></span>Roadmap</div>
-      <h2>接下来的方向</h2>
-      <p>按「能否拆开验证」排序。做完一篇，就在档案里加一张卡片。</p>
-    </div>
-    <div class="rv" id="roadmap-list"></div>
-  </div>
-</section>
-
-<!-- ================= 04 STACK ================= -->
-<section id="stack">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">04</span><span class="bar"></span>Stack</div>
-      <h2>共同的底座</h2>
-      <p>所有项目共享同一套基础设施，换一个项目不用重新学怎么跑。</p>
-    </div>
-
-    <div class="tbl-wrap rv">
-      <table>
-        <thead><tr><th>层</th><th>选型</th><th>理由</th></tr></thead>
-        <tbody>
-          <tr><td>数值计算</td><td class="mono">PyTorch / NumPy</td><td>整条光学链路可微，梯度直接反传到结构参数</td></tr>
-          <tr><td>传播算子</td><td class="mono">split-step BPM + 角谱</td><td>保留强相位累积与多切片耦合，比全波快几个量级</td></tr>
-          <tr><td>代理模型</td><td class="mono">Transformer / U-Net</td><td>按论文结构实现，规模可配置</td></tr>
-          <tr><td>交付形态</td><td class="mono">CLI + 桌面 GUI</td><td>命令行便于批量复算，GUI 便于不改代码的人上手</td></tr>
-          <tr><td>许可</td><td class="mono">MIT</td><td>代码可自由取用；论文插图版权归原作者</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 05 DOWNLOAD ================= -->
-<section id="download">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">05</span><span class="bar"></span>Download</div>
-      <h2>直接下载</h2>
-      <p>每份交付都包含可运行的源码、预训练权重和复算全部指标所需的数据。不需要先读文档就能跑起来。</p>
-    </div>
-
-    <div class="dl-grid rv">
-      <div class="dl-card primary">
-        <div class="ver">PROJECT 01 · METAE-FORMER · v1.0.0</div>
-        <h3>源码包 + 桌面程序</h3>
-        <div class="sub">PhotoniX 2026 · 神经网络超表面逆向设计</div>
-        <ul class="checklist">
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>源码包 8.9 MB：<code>metae/</code> 库、10 个入口脚本、3 个权重、970 行教程</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>桌面程序 214 MB（Windows x64，免安装，双击即用）</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>复现结果图与训练历史 CSV，全部指标可复算</li>
-        </ul>
-        <div class="dl-actions" style="flex-wrap:wrap">
-          <a class="btn btn-primary" href="downloads/metae-former-v1.0.0.zip">
-            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>源码 ZIP
-          </a>
-          <a class="btn btn-ghost" href="downloads/metae-gui-windows-x64-v1.0.0.zip.001">
-            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>桌面程序 · 第 1 卷
-          </a>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7">
-          桌面程序分 3 卷（75 + 75 + 64 MB），需先合并再解压。
-          <a href="reproductions/metae-former.html#download">在项目页取全部分卷与合并命令 →</a>
-        </div>
-        <div class="meta-row"><span>v1.0.0</span><span>MIT</span><span>2026-11-02</span></div>
-      </div>
-
-      <div class="dl-card">
-        <div class="ver">PROJECT 02 · OPTICAL GENERATIVE · v1.0.0</div>
-        <h3>MATLAB 代码包</h3>
-        <div class="sub">光学生成模型 · 1.99 MB</div>
-        <ul class="checklist">
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>15 个 MATLAB 脚本</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>两个数据集的原型权重</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>四组实验完整日志</li>
-        </ul>
-        <div class="dl-actions">
-          <a class="btn btn-primary" href="downloads/optical-generative-models-v1.0.0.zip">
-            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>下载 ZIP
-          </a>
-        </div>
-        <div class="meta-row"><span>v1.0.0</span><span>MIT</span><span>2026-11-02</span></div>
-      </div>
-    </div>
-
-    <div class="dl-card rv" style="margin-top:18px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap">
-      <div>
-        <div class="ver" style="margin-bottom:6px">GIT CLONE · 整个仓库</div>
-        <div style="font-size:14px;color:var(--ink-2)">两个复现的源码、站点本身、全部素材，一次取全。</div>
-      </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <div class="pathline" style="font-size:11px">git clone https://github.com/Alice-P197/paper-repro-lab.git</div>
-        <button class="copybtn" style="padding:9px 14px;font-size:12px"
-          data-copy-text="git clone https://github.com/Alice-P197/paper-repro-lab.git">复制命令</button>
-      </div>
+    <div class="empty" id="empty" hidden>
+      <p class="t">没有匹配的条目</p>
+      <p class="d">换个关键词，或者点「全部」回到完整列表。</p>
     </div>
   </div>
 </section>
@@ -275,7 +93,6 @@
     </div>
     <div class="foot-links">
       <a href="index.html#archive">档案</a>
-      <a href="index.html#download">下载</a>
       <a href="guide.html">方法</a>
       <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
       <a href="#top">回到顶部</a>

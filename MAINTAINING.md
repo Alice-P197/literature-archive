@@ -28,15 +28,30 @@ docs/
 |---|---|
 | `site.css` | 改配色只改顶部 `:root` 变量，全站跟着变。组件按用途分段，新增组件加到文件末尾。 |
 | `site.js` | 所有功能都做了缺元素保护，任意页面加载同一份脚本不会报错。 |
-| `projects.js` | 门户卡片与路线图的数据源。改这里，首页自动更新，不需要碰 HTML。 |
+| `projects.js` | 门户的唯一数据源：卡片、方向筛选、搜索索引全部由它生成。改这里，首页自动更新，不需要碰 HTML。 |
 
 ## 新增一篇复现：三个动作
 
-1. 在 `docs/assets/data/projects.js` 加一条记录 —— 门户卡片自动出现
+1. 在 `docs/assets/data/projects.js` 的 `REPRODUCTIONS` 末尾追加一条记录 —— 门户卡片、方向按钮、搜索索引自动出现
 2. 复制 `docs/reproductions/_template.html` 为 `<slug>.html`，只填正文
 3. 图片放 `docs/assets/img/<slug>/`，宽 ≤ 1300 px
 
 做完这三步，门户首页与页间导航（上下篇）会自动接上。
+
+### 数据字段约定
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `no` | ✓ | 卡片角标编号，按收录顺序顺延，不要跳号 |
+| `venue` | ✓ | 期刊与年份，一行，例：`Nature 644 · 2025` |
+| `title` | ✓ | 只写标题，不带副标题 |
+| `sum` | ✓ | 一句话，≤ 40 字；细节留给复现页 |
+| `cats` | ✓ | 方向 id 数组，取自 `window.CATEGORIES`，可多值 |
+| `tags` | | 技术关键词，只进搜索索引，卡片上不显示 |
+| `cover` | ✓ | 16:10 封面图 |
+| `href` | ✓ | 相对 `docs/` 的路径 |
+
+新增方向时，在 `window.CATEGORIES` 里加一行 `{ id, label }`。没有复现的方向不会显示按钮 —— 等第一篇归档进来，按钮自动出现，不需要改 HTML。
 
 `_template.html` 放在 `reproductions/` 下是必须的：放 `docs/` 根会让页内所有 `../assets/` 失效。
 

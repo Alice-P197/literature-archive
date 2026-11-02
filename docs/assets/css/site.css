@@ -92,8 +92,12 @@ h1 em{font-style:italic;color:var(--teal);white-space:nowrap;
   background-size:100% .30em;
   background-position:0 88%;
 }
-.lede{font-size:17.5px;line-height:1.85;color:var(--ink-2);max-width:44em;margin-bottom:34px}
+.lede{font-size:17.5px;line-height:1.85;color:var(--ink-2);max-width:44em;margin-bottom:22px}
 .lede strong{color:var(--ink);font-weight:600}
+.meta-line{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
+}
 
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
 .btn{
@@ -405,6 +409,72 @@ footer{
   transition:gap .2s ease;
 }
 .pcard:hover .go{gap:11px}
+.pcard .cover{position:relative}
+.pcard .pno{
+  position:absolute;top:10px;left:10px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  color:var(--ink-2);background:rgba(251,250,247,.94);
+  border:1px solid var(--line);padding:2px 7px;line-height:1.6;
+}
+.pcard .cats{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;
+  padding-top:13px;border-top:1px solid var(--line);
+}
+.pcard .cats span{
+  font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  color:var(--ink-2);background:var(--paper-2);border:1px solid var(--line);
+  padding:2px 7px;line-height:1.6;
+}
+.pcard .sum{margin-bottom:0}
+
+/* ---------- archive toolbar：搜索 + 方向筛选 ---------- */
+.toolbar{
+  position:sticky;top:64px;z-index:80;
+  background:rgba(251,250,247,.96);backdrop-filter:saturate(160%) blur(8px);
+  border:1px solid var(--line);padding:14px 15px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.searchbox{
+  display:flex;align-items:center;gap:9px;cursor:text;
+  border:1px solid var(--line-2);background:#fff;padding:8px 12px;
+  transition:border-color .16s,box-shadow .16s;
+}
+.searchbox:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(31,78,95,.08)}
+.searchbox svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:var(--muted);stroke-width:1.7;stroke-linecap:round}
+.searchbox input{
+  flex:1;min-width:0;border:none;outline:none;background:none;padding:2px 0;
+  font-family:var(--sans);font-size:13.5px;color:var(--ink);
+}
+.searchbox input::placeholder{color:#9aa0a8}
+.searchbox input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.catbar{display:flex;flex-wrap:wrap;gap:7px}
+.catbtn{
+  display:inline-flex;align-items:baseline;gap:5px;cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;line-height:1.5;color:var(--ink-2);
+  background:#fff;border:1px solid var(--line-2);padding:4px 11px;
+  transition:border-color .16s,color .16s,background .16s;
+}
+.catbtn sup{font-family:var(--mono);font-size:9.5px;opacity:.55;top:-.2em}
+.catbtn:hover{border-color:var(--teal);color:var(--teal)}
+.catbtn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.catbtn.on sup{opacity:.7}
+.resultbar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:12px 2px 13px;border-bottom:1px solid var(--line);margin-bottom:22px;
+}
+#count{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted)}
+.reset{
+  font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--ochre);
+  background:none;border:none;cursor:pointer;padding:2px 0;
+  border-bottom:1px dotted var(--ochre);
+}
+.reset:hover{color:var(--teal);border-color:var(--teal)}
+.empty{
+  border:1px dashed var(--line-2);background:#fff;
+  padding:52px 24px;text-align:center;margin-top:4px;
+}
+.empty .t{font-family:var(--serif);font-size:16px;font-weight:700;margin-bottom:7px}
+.empty .d{font-size:13px;color:var(--muted)}
 
 /* ---------- intro band (门户首屏下方说明条) ---------- */
 .band{

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>光学生成模型 · 让一束光直接生成图像 | 论文复现</title>
-<meta name="description" content="Nature 2025《Optical generative models》快照光学生成模型的复现记录：相位种子经角谱传播与衍射解码层成像，MNIST / Fashion-MNIST 十类条件生成。含 MATLAB 源码、已训练原型、结果图与复现报告。">
+<meta name="description" content="Nature 2025《Optical generative models》快照光学生成模型的复现记录：相位种子经角谱传播与衍射解码层成像，MNIST / Fashion-MNIST 十类条件生成。含 MATLAB 源码、已训练原型、结果图与实验日志。">
 <meta property="og:title" content="光学生成模型 · 让一束光直接生成图像">
 <meta property="og:description" content="相位种子 → 角谱传播 → 衍射解码层 → 传感器，一次前向生成一张图。">
 <meta property="og:type" content="article">
@@ -21,7 +21,6 @@
     </a>
     <div class="nav-links">
       <a href="../index.html#archive" class="active">档案</a>
-      <a href="#download">下载</a>
       <a href="../guide.html">方法</a>
       <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -57,20 +56,20 @@
   <div class="wrap">
     <div class="eyebrow">
       <span class="dot"></span>
-      Nature 644 · 2025 · 项目 02
+      Nature 644 · 2025 · 项目 01
     </div>
     <h1>让一束光<br>直接<em>生成一张图</em></h1>
     <p class="lede">
       快照光学生成模型把「生成」实现为一段固定的光学前向：一个 32×32 的<strong>相位种子</strong>被编码到 SLM 上，
       经两段自由空间传播和一片<strong>可学习的衍射解码层</strong>，在传感器上落地成图。
-      这里是它在 MNIST 与 Fashion-MNIST 上的十类条件生成复现——源码、已训练原型、结果图、复现报告。
+      这里是它在 MNIST 与 Fashion-MNIST 上的十类条件生成复现——源码、已训练原型、结果图与实验日志。
     </p>
     <div class="cta">
       <a class="btn btn-primary" href="#results">
         查看生成结果
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
       </a>
-      <a class="btn btn-ghost" href="#download">下载报告与源码</a>
+      <a class="btn btn-ghost" href="#download">下载代码包</a>
     </div>
     <div class="chips">
       <span class="chip">MATLAB R2021b+</span>
@@ -331,7 +330,7 @@ setenv('OGEN_DATASET','mnist');   train_encoder_distill</pre>
     <div class="shead rv">
       <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
       <h2>资源下载</h2>
-      <p>源码、已训练原型与复现报告。原型权重可以直接加载出图，不需要重新训练。</p>
+      <p>源码、已训练原型与实验日志。原型权重可以直接加载出图，不需要重新训练。</p>
     </div>
 
     <div class="dl-grid rv">
@@ -404,13 +403,13 @@ setenv('OGEN_DATASET','mnist');   train_encoder_distill</pre>
 
 <div class="wrap">
   <div class="pager">
-    <a href="metae-former.html">
-      <div class="dir">← 上一篇</div>
-      <div class="tt">MetaE-former：用邻域注意力代理模型设计大尺寸超表面</div>
-    </a>
-    <a class="next" href="../index.html#archive">
-      <div class="dir">返回 →</div>
+    <a href="../index.html#archive">
+      <div class="dir">← 返回</div>
       <div class="tt">全部复现档案</div>
+    </a>
+    <a class="next" href="metae-former.html">
+      <div class="dir">下一篇 →</div>
+      <div class="tt">MetaE-former：用邻域注意力代理模型设计大尺寸超表面</div>
     </a>
   </div>
 </div>
