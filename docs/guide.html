@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>复现方法与站点规范 · 论文复现实验室</title>
-<meta name="description" content="一次论文复现的六步执行流程、站点的目录结构，以及新增一篇复现时要遵守的写作与制图规范。">
-<meta property="og:title" content="复现方法与站点规范">
+<title>复现方法论 · 论文复现实验室</title>
+<meta name="description" content="把一篇论文变成可运行代码的六步流程、三类最常见的失败模式，以及判断一份复现是否可信的四个判据。">
+<meta property="og:title" content="复现方法论">
 <meta property="og:type" content="article">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/css/site.css">
@@ -20,8 +20,7 @@
     </a>
     <div class="nav-links">
       <a href="index.html#archive">档案</a>
-      <a href="guide.html">方法</a>
-      <a href="reproductions/_template.html">模板</a>
+      <a href="guide.html" class="active">方法</a>
       <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
@@ -34,7 +33,7 @@
   <div class="in">
     <a href="index.html">档案</a>
     <span class="sep">/</span>
-    <span class="cur">方法与规范</span>
+    <span class="cur">复现方法论</span>
   </div>
 </div>
 
@@ -42,17 +41,18 @@
   <div class="wrap">
     <div class="eyebrow">
       <span class="dot"></span>
-      方法 · 规范
+      方法论
     </div>
-    <h1>一篇论文<em>怎么变成</em><br>一份能跑的档案</h1>
+    <h1>一篇论文<br><em>怎么变成</em>能跑的代码</h1>
     <p class="lede">
-      这一页写两件事：复现一篇论文时按什么顺序做，以及往这个站点加一篇新复现时要遵守什么格式。
-      前者是为了让结果可信，后者是为了让读者换一篇论文时不用重新适应。
+      复现失败大多不是因为看不懂公式，而是因为某一处口径对不上——而口径错了不会报错，
+      只会让损失停在某个数字上，然后你花三周去调一个不是超参的东西。
+      这一页写的是把这件事做对需要遵守的顺序、最常见的三种翻车方式，以及怎样判断一份复现值不值得信。
     </p>
     <div class="cta">
       <a class="btn btn-primary" href="#flow">六步流程</a>
-      <a class="btn btn-ghost" href="#add">新增一篇</a>
-      <a class="btn btn-ghost" href="#rules">写作规范</a>
+      <a class="btn btn-ghost" href="#failure">三类失败</a>
+      <a class="btn btn-ghost" href="#judge">怎么判断可信</a>
     </div>
   </div>
 </header>
@@ -119,150 +119,96 @@
   </div>
 </section>
 
-<!-- ================= 02 STRUCTURE ================= -->
-<section id="structure">
+<!-- ================= 02 FAILURE ================= -->
+<section id="failure">
   <div class="wrap">
     <div class="shead rv">
-      <div class="kicker"><span class="num">02</span><span class="bar"></span>Structure</div>
-      <h2>站点结构</h2>
-      <p>站点是纯静态的，没有构建步骤：样式、脚本、数据各一份，所有页面共用。</p>
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>Failure</div>
+      <h2>三类典型失败</h2>
+      <p>它们共同的特征是：程序不报错，指标还挺好看，但结果是错的。</p>
     </div>
 
-    <div class="codeblock rv">
-      <div class="codehead"><span>目录</span>
-        <button class="copybtn" data-copy="#tree">复制</button></div>
-      <pre id="tree">docs/
-├── index.html                     门户：项目卡片由数据渲染
-├── guide.html                     本页
-├── reproductions/
-│   ├── _template.html            空白项目页骨架，复制它开始新的一篇
-│   ├── metae-former.html         项目 01
-│   └── optical-generative-models.html   项目 02
-├── assets/
-│   ├── css/site.css              唯一的样式表：设计令牌 + 全部组件
-│   ├── js/site.js                唯一的脚本：灯箱、复制、渐显、卡片渲染
-│   ├── data/projects.js          ★ 项目清单，新增一篇改这里
-│   └── img/
-│       ├── metae/                项目 01 的图
-│       └── optgen/               项目 02 的图
-└── downloads/                    报告 PDF 等可直接下载的文件</pre>
+    <div class="prose rv" style="margin-bottom:34px">
+      <h3>一、口径不一致</h3>
+      <p>同一个符号在不同层里含义不同。例如「孔径半径」在物理装置里是全口径的一半，
+      在把目标相位映射到孔径网格时如果用错了采样间距，算出的相位会整体放大几十倍——
+      数值上看只是在 <code>0 ~ 4000 rad</code> 之间，不会溢出、不会 NaN，但优化器面对的是一个完全错误的目标，
+      它只会诚实地收敛到一个错误的结构上。</p>
+      <p><b>怎么发现：</b>把关键中间量打印出来，和手算的期望值比。相位掩模的峰值相位、
+      焦面第一零点的位置、总能量——这些量都有解析或半解析的参考值，对不上就是口径的问题，不是超参的问题。</p>
     </div>
 
-    <div class="feat rv">
-      <div class="row"><div class="k">site.css</div><div class="v">改配色只改顶部 <code>:root</code> 的变量，全站跟着变。组件按用途分段，新增组件加到文件末尾。</div></div>
-      <div class="row"><div class="k">site.js</div><div class="v">所有功能都做了缺元素保护，任意页面加载同一份脚本不会报错。</div></div>
-      <div class="row"><div class="k">projects.js</div><div class="v">门户卡片与路线图的数据源。改这里，首页自动更新，不需要碰 HTML。</div></div>
+    <div class="prose rv" style="margin-bottom:34px">
+      <h3>二、代理模型自欺</h3>
+      <p>代理模型（用神经网络拟合物理求解器）在验证集上可以说自己误差极小，但只要训练分布里没有出现过目标结构那一类形态，
+      它在设计阶段就会被优化器当成一个「好骗的裁判」——优化器找到的不是物理上正确的结构，
+      而是代理模型的盲区。表现是：代理说误差 0.02 rad，把结构放回真实物理里算，光斑是散斑。</p>
+      <p><b>怎么发现：</b>拿设计态的真实结构（二值化后的、带拼接缝的）单独喂给代理，逐块看误差，
+      而不是只看验证集上的灰度结构。验证集通常是平滑随机的，设计态是离散且带结构的，两者分布不同。</p>
+    </div>
+
+    <div class="prose rv">
+      <h3>三、归一化造出的作弊解</h3>
+      <p>损失函数里一旦对预测和目标各自做 <code>max</code> 或 <code>sum</code> 归一化，
+      优化器就有了作弊空间：它可以把全部能量挤进一个极小的尖峰，让归一化后的比值看起来完美，
+      代价是窗口外一片漆黑、结构被搅碎。损失会掉到 <code>1e-12</code>，你以为是收敛了。</p>
+      <p><b>怎么发现：</b>归一化只能用一个<b>与结构无关的物理量</b>做分母——比如入射总功率、输入场能量。
+      如果分母依赖当前结构，优化器就会去操纵分母。</p>
+    </div>
+
+    <div class="notes rv">
+      <p>三类失败共享一个教训：<b>能算出数字不等于算对了</b>。每一个中间量都要有独立的校验路径，
+      而最可靠的校验永远是回到物理本身重算一遍。</p>
     </div>
   </div>
 </section>
 
-<!-- ================= 03 ADD ================= -->
-<section id="add">
+<!-- ================= 03 JUDGE ================= -->
+<section id="judge">
   <div class="wrap">
     <div class="shead rv">
-      <div class="kicker"><span class="num">03</span><span class="bar"></span>Add</div>
-      <h2>新增一篇：三个动作</h2>
-      <p>整套结构就是为这件事准备的。做完这三步，门户首页与页间导航会自动接上。</p>
-    </div>
-
-    <div class="rv">
-      <div class="step">
-        <div class="num">01</div>
-        <div>
-          <h4>在 projects.js 里加一条记录</h4>
-          <p>放在数组最前面，新的排在上面。</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="codeblock rv">
-      <div class="codehead"><span>assets/data/projects.js</span>
-        <button class="copybtn" data-copy="#js-snippet">复制</button></div>
-      <pre id="js-snippet">{
-  slug: "your-paper",              <span class="c">// 同时用作文件名与图目录名</span>
-  status: "done",                  <span class="c">// done | wip | plan</span>
-  statusText: "已复现",
-  venue: "期刊 · 年份",
-  title: "论文标题的中文表述",
-  sum: "两三句话说清做了什么、结果如何，不写形容词。",
-  cover: "assets/img/your-paper/cover.jpg",
-  kpis: [
-    { v: "0.0082", k: "指标名" },
-    { v: "10 类", k: "覆盖范围" }
-  ],
-  tags: ["框架", "方法", "器件"],
-  href: "reproductions/your-paper.html"
-}</pre>
-    </div>
-
-    <div class="rv">
-      <div class="step">
-        <div class="num">02</div>
-        <div>
-          <h4>把 _template.html 复制成项目页</h4>
-          <p>改成 <code>reproductions/&lt;slug&gt;.html</code>，然后只填正文。
-          页头、面包屑、章节条、页脚、灯箱都不动——它们已经写好了。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="num">03</div>
-        <div>
-          <h4>放图、接导航</h4>
-          <p>图片放 <code>assets/img/&lt;slug&gt;/</code>，尺寸压到宽 ≤ 1300 px。
-          最后把相邻两页的「上一篇 / 下一篇」互指一下。</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 04 RULES ================= -->
-<section id="rules">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">04</span><span class="bar"></span>Rules</div>
-      <h2>写作与制图规范</h2>
-      <p>这些规则不是审美偏好，是为了让读者能比较不同项目、能判断结论强度。</p>
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Judge</div>
+      <h2>怎么判断一份复现值不值得看</h2>
+      <p>不是看结果图漂不漂亮。漂亮是最容易伪造的东西。看下面四条。</p>
     </div>
 
     <div class="tbl-wrap rv">
       <table>
-        <thead><tr><th>项</th><th>规则</th><th>理由</th></tr></thead>
+        <thead><tr><th>判据</th><th>可信的样子</th><th>该警惕的样子</th></tr></thead>
         <tbody>
-          <tr><td>章节</td><td>基础 / 论文 / 结果 / 方法 / 上手 / 下载 / 引用，有界面的插「GUI」</td><td>换一篇论文时阅读路径不变</td></tr>
-          <tr><td>差异表</td><td>每篇必须有「论文做法 / 本复现做法 / 影响」三列</td><td>结论的适用范围由它界定</td></tr>
-          <tr><td>结果图</td><td>必须注明来源与口径：谁的图、什么条件、单位与比例尺</td><td>避免把论文原图当成自己的结果</td></tr>
-          <tr><td>数字</td><td>只写自己跑出来的数，并给出对应命令</td><td>读者要能复算</td></tr>
-          <tr><td>图片</td><td>宽 ≤ 1300 px；照片类用 JPEG q86，线稿用 PNG</td><td>首屏加载时间</td></tr>
-          <tr><td>文案</td><td>只讲方法与结果的差异，不把硬件条件、运行速度当作成果</td><td>这些不是方法贡献，写进去会稀释结论</td></tr>
-          <tr><td>术语</td><td>首次出现给全称与一句话解释，之后用缩写</td><td>跨领域读者能跟上</td></tr>
-          <tr><td>未完成</td><td>用 <code>warn</code> 标记，不要隐去</td><td>省略会被误读为已完成</td></tr>
+          <tr>
+            <td>差异表</td>
+            <td>逐条列出替换、省略、精度损失，并标明对结论的影响方向</td>
+            <td>只有一句「受限于条件，结果略有差异」</td>
+          </tr>
+          <tr>
+            <td>结果图</td>
+            <td>注明来源与口径：原图还是自算、什么条件、比例尺与单位</td>
+            <td>论文原图和自己的结果混排，不加区分</td>
+          </tr>
+          <tr>
+            <td>数字</td>
+            <td>给出对应命令，读者能复算；附误差分布而非单个均值</td>
+            <td>只有结果没有过程，数字无法追溯</td>
+          </tr>
+          <tr>
+            <td>未完成项</td>
+            <td>明确写出哪一部分没做到、卡在哪里</td>
+            <td>通篇「已完全复现」，或对差距避而不谈</td>
+          </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="notes rv">
-      <p>关于最后一条：复现的价值不在「全部做出来了」，而在「说清了做到哪、没做到哪、为什么」。
-      一份诚实的差异表比一张漂亮的对比图更能支撑后续工作。</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 05 CHECK ================= -->
-<section id="check">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">05</span><span class="bar"></span>Checklist</div>
-      <h2>发布前过一遍</h2>
+    <div class="prose rv">
+      <p>最后一条最重要。复现的价值不在「全部做出来了」，而在「说清了做到哪、没做到哪、为什么」。
+      一份诚实的差异表比一张漂亮的对比图更能支撑后续工作——因为读的人知道自己在什么基础上继续。</p>
+      <p>反过来，当你看到一份复现报告对差距只字不提、只用一句「基本一致」收尾时，
+      你应该假设它没有做过真实场复核。这个假设在多数情况下是对的。</p>
     </div>
 
-    <div class="feat rv">
-      <div class="row"><div class="k">结构</div><div class="v">章节编号连续、锚点条链接全部有效、面包屑路径正确</div></div>
-      <div class="row"><div class="k">资源</div><div class="v">所有 <code>img</code> 路径存在；图片无空白占位；PDF 与 ZIP 链接可下载</div></div>
-      <div class="row"><div class="k">交互</div><div class="v">灯箱可开可关（Esc 生效）、复制按钮有反馈、导航当前页高亮</div></div>
-      <div class="row"><div class="k">数据</div><div class="v">projects.js 里的 href 与文件名一致；新增卡片出现在首页</div></div>
-      <div class="row"><div class="k">窄屏</div><div class="v">900 px 以下卡片单列、截图单列、参数表可横向滚动</div></div>
-      <div class="row"><div class="k">声明</div><div class="v">许可、引用、未复现项都在</div></div>
+    <div class="cta rv" style="margin-top:36px">
+      <a class="btn btn-primary" href="index.html#archive">看档案里的例子</a>
     </div>
   </div>
 </section>
@@ -276,7 +222,6 @@
     <div class="foot-links">
       <a href="index.html#archive">全部档案</a>
       <a href="guide.html">复现方法</a>
-      <a href="reproductions/_template.html">页面模板</a>
       <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
       <a href="#top">回到顶部</a>
     </div>

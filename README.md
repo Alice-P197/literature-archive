@@ -23,7 +23,7 @@
 ```
 ├── docs/                              站点（GitHub Pages 源目录）
 │   ├── index.html                     门户：项目卡片由数据渲染
-│   ├── guide.html                     复现方法与写作规范
+│   ├── guide.html                     复现方法论（面向读者）
 │   ├── reproductions/
 │   │   ├── _template.html             空白项目页骨架
 │   │   ├── metae-former.html          项目 01 详情页
@@ -85,7 +85,7 @@ setenv('OGEN_DATASET','mnist');   generate_mixture      % 阶段二，约 1 分�
 2. 复制 `docs/reproductions/_template.html` 为 `<slug>.html`，只填正文
 3. 图片放 `docs/assets/img/<slug>/`，宽 ≤ 1300 px
 
-详细规范（章节顺序、差异表格式、制图约定、发布检查清单）见站点的 `guide.html`。
+站点维护的详细约定（章节顺序、差异表格式、制图要求、发布检查清单、打包方式）见 `MAINTAINING.md`。
 
 ---
 
