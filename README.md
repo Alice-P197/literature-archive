@@ -1,133 +1,104 @@
-# MetaE-former 复现 · 神经网络驱动的超表面逆向设计
+# 论文复现实验室 · Paper Repro Lab
 
-> PhotoniX 2026 论文 *Rapid inverse design of large-scale freeform metaoptics with the neighborhood-attention transformer* 的**纯 CPU 复现**。
-> 完整的四件套：源码 / 预训练权重 / 复现结果图 / 零基础教程。
+把机器学习、计算成像与光学设计方向的论文，拆成可运行、可修改、可验证的代码档案。
 
-**📄 项目主页（含结果对照与下载）：<https://alice-p197.github.io/metae-former/>**
+每一篇固定交付四样东西：**可运行的源码**、**已训练的权重**、**和原文并排的结果图**，
+以及一份**写清哪里做不到的差异说明**。
+
+站点：<https://alice-p197.github.io/paper-repro-lab/>
 
 ---
 
-## 这个仓库是什么
+## 收录
 
-把一个"用 Transformer 代理模型做超表面逆向设计"的论文，拆成能在一台没有 GPU 的电脑上跑通的完整链路：
+| # | 论文 | 方向 | 交付 |
+|---|---|---|---|
+| 01 | **MetaE-former**：用邻域注意力代理模型设计大尺寸超表面<br>PhotoniX 2026 | 神经网络 + 逆向设计 | Python 源码、3 个预训练权重、Fig.3 / Fig.6 复现图、桌面端 GUI、零基础教程 |
+| 02 | **Optical generative models**：让光在自由空间里完成一次生成<br>Nature 644, 903–911 (2025) | 光学计算 + 生成模型 | MATLAB 源码（11 个脚本）、两套原型权重、复现报告 |
+
+---
+
+## 仓库结构
 
 ```
-自由形状超原子（4 类，流式生成）
-      │  split-step BPM 打标签（替代论文的 RCWA/FDTD）
-      ▼
-预训练 MetaE-former（NAT U-Net，0.82 M 参数）      pretrain.py
-      │  用预训练模型反演任务结构 → 存档中间 RI → 重新标注（自监督数据引擎）
-      ▼
-任务微调（差分学习率 0.5a / 5a / 8a / 10a / 15a）   finetune.py
-      ▼
-任意任务逆向设计（5 µm patch 反演 + 84% 切割拼接 + 二值化惩罚）
-      │                                              design.py
-      ▼
-焦面光斑 / FWHM / 效率 / x-z 传播验证              evaluate.py
+├── docs/                              站点（GitHub Pages 源目录）
+│   ├── index.html                     门户：项目卡片由数据渲染
+│   ├── guide.html                     复现方法与写作规范
+│   ├── reproductions/
+│   │   ├── _template.html             空白项目页骨架
+│   │   ├── metae-former.html          项目 01 详情页
+│   │   └── optical-generative-models.html   项目 02 详情页
+│   ├── assets/
+│   │   ├── css/site.css               唯一样式表
+│   │   ├── js/site.js                 唯一脚本
+│   │   ├── data/projects.js           项目清单（新增一篇改这里）
+│   │   └── img/{metae,optgen}/
+│   └── downloads/                     代码包与报告 PDF
+│
+├── metae/                             MetaE-former 的核心库
+├── pretrain.py  finetune.py  design.py  evaluate.py
+├── gui_app.py                         tkinter 桌面界面
+├── direct_design.py                   可微 BPM 全口径直设计
+├── design_fig6.py  make_fig6.py       Fig.6 复现流水线
+├── checkpoints/                       预训练 / 微调权重
+├── TUTORIAL.md                        零基础代码接手教程（约 970 行）
+│
+└── reproductions/
+    └── optical-generative-models/     项目 02 的 MATLAB 源码与原型权重
 ```
 
-## 快速开始
+---
+
+## 快速上手
+
+### 项目 01 · MetaE-former
 
 ```bash
-git clone https://github.com/Alice-P197/metae-former.git
-cd metae-former
 pip install -r requirements.txt
 
-# 确认权重可用（约 26 秒）
+# 评估现成权重（约 1 分钟）
 python evaluate.py --ckpt checkpoints/pretrain.pt --n 48
 
-# 涡旋光逆向设计（数分钟，产物在 outputs/vortex6/）
-python design.py --task vortex --l 6 --ckpt checkpoints/finetune2.pt --out outputs/vortex6
+# 做一次涡旋光逆向设计
+python design.py --task vortex --l 6 --focal 20e-6 --ckpt checkpoints/finetune2.pt --out outputs/vortex6
+
+# 打开桌面界面
+python gui_app.py
 ```
 
-也可以直接打开 GUI：
+首次接手建议先读 **[TUTORIAL.md](TUTORIAL.md)**：从「张量是什么」讲到「怎么加一个新的目标光场」，所有命令与数值都实测过。
 
-```bash
-python gui_app.py            # 四个标签页：训练 / 逆向设计 / 场可视化验证 / 模型评估
-python gui_app.py --selftest # 无头自检，改代码后的回归测试
+### 项目 02 · 光学生成模型
+
+```matlab
+setenv('OGEN_DATASET','mnist');   train_prototypes     % 阶段一，约 18 分钟
+setenv('OGEN_DATASET','mnist');   generate_mixture      % 阶段二，约 1 分钟
 ```
 
-## 复现结果
+---
 
-| 论文 Fig.6 | 本复现 |
-|---|---|
-| ![paper](docs/assets/fig6_paper.jpg) | ![repro](docs/assets/fig6_repro.jpg) |
+## 新增一篇复现
 
-**方法链路全部跑通，数值精度没有追平论文。** 差异的根因（模型容量 1/49、BPM 替代 FDTD、小块拼接累积误差）已在[项目主页](https://alice-p197.github.io/metae-former/#results)逐条列出，未做美化。
+站点的结构就是为这件事准备的，三个动作：
 
-代理模型精度（`evaluate.py --n 48` 实测）：
+1. 在 `docs/assets/data/projects.js` 加一条记录 —— 门户卡片自动出现
+2. 复制 `docs/reproductions/_template.html` 为 `<slug>.html`，只填正文
+3. 图片放 `docs/assets/img/<slug>/`，宽 ≤ 1300 px
 
-| 样本族 | 幅度 MAE | 相位 MAE | 论文区间 |
-|---|---|---|---|
-| random | 0.123 | 0.171 | 0.037 – 0.114 |
-| island | 0.096 | 0.077 | 0.037 – 0.114 |
-| stripe | 0.134 | 0.087 | 0.037 – 0.114 |
-| **overall** | **0.118** | **0.112** | 0.067 – 0.123（相位） |
+详细规范（章节顺序、差异表格式、制图约定、发布检查清单）见站点的 `guide.html`。
 
-## 与论文的差异
+---
 
-| 要素 | 论文 | 本仓库 |
-|---|---|---|
-| 真值求解器 | RCWA / FDTD 全波 | **split-step BPM 近似**（`metae/solver.py`） |
-| 训练数据 | 26 万样本，20 epoch | 流式生成，1600 step ≈ 3.8 万 |
-| 网络规模 | 16 块 · embed 256 · 16 heads（≈40 M） | 7 块 · embed 48 · 4 heads（0.82 M） |
-| 设计口径 | 1 mm · 57121 patches | 4×4 patches（16.8 µm） |
-| 硬件 | GPU 集群 | 纯 CPU |
+## 设计原则
 
-换真数据只需替换 `metae/solver.py` 的计算核心，保持 `(B,25,25) → (B,2,100,100)` 接口即可，其余代码不用动。
+- **差异表优先于结论**：每篇都有「论文做法 / 本复现做法 / 影响」三列，结论只能写在差异表允许的范围内。
+- **指标可复算**：页面上每个数字都对应一条能跑的命令。
+- **未完成项不隐去**：用标记标出，而不是删除。
+- **只讲方法差异**：硬件条件、运行速度这类环境差异不作为成果表述。
 
-## 目录
+---
 
-```
-metae/
-  solver.py   近似 Maxwell 求解器（split-step BPM）+ 角谱传播
-  data.py     四类自由形状超原子采样器
-  model.py    MetaE-former：NAT U-Net（NeighborhoodAttention / NABlock / CPE）
-  losses.py   L = L_amp + α·L_phase（论文 Eq.1–3）
-  metrics.py  归一化 MAE、幅度/角度 MAE
-  tasks.py    目标相位：lens / vortex / airy / custom
-  pipeline.py 高层封装，CLI 与 GUI 共用
-  utils.py    归一化与 checkpoint 加载
-pretrain.py        预训练
-finetune.py        自监督数据引擎 + 差分学习率微调
-design.py          ★ 主设计入口（论文 Eq.4–7）
-direct_design.py   物理直接设计（全口径可微 BPM，不经代理）
-design_fig6.py     论文 Fig.6 的批量复现设计
-make_fig6.py       Fig.6 出图
-refine_display.py  已存结构的高分辨前向验证
-evaluate.py        Table 1 风格评估
-gui_app.py         PyQt5 图形界面
-docs/              GitHub Pages 站点
-TUTORIAL.md        零基础教程（约 970 行）
-```
+## 许可
 
-## 两条设计路线
-
-| | `design.py`（代理） | `direct_design.py`（直接） |
-|---|---|---|
-| 优化循环里算光场 | 神经网络（快，误差 ~1 rad） | 真 BPM（准，慢） |
-| 口径 | 5 µm patch 反演后拼接 | 全口径一次反演 |
-| 耗时 | 2 – 5 分钟 | 数十分钟 |
-| 用途 | 日常设计 | 验收 / 归因"是模型不够还是物理设定错" |
-
-## 教程
-
-[TUTORIAL.md](TUTORIAL.md) 写给**完全没接触过深度学习**的读者：从张量、训练循环、代理模型、可微性讲起，
-再到 patch 拼接、二值化惩罚、形状账本与排错手册。建议按 `tasks.py → solver.py → data.py → model.py → pretrain.py → design.py` 的顺序读。
-
-## 引用
-
-```bibtex
-@article{kuang2026metae,
-  title   = {Rapid inverse design of large-scale freeform metaoptics
-             with the neighborhood-attention transformer},
-  author  = {Kuang, and others},
-  journal = {PhotoniX},
-  year    = {2026}
-}
-```
-
-## 声明
-
-本项目是第三方复现，非论文作者官方代码。真值场由 split-step BPM 生成，绝对数值不可与论文对标。
-论文图片版权归原作者与期刊所有，此处仅用于学术对照。代码以 MIT 许可发布。
+代码以 MIT 许可发布。论文插图版权归原作者与期刊所有，站内仅用于结果对照。
+本站为独立复现，非论文作者官方实现。

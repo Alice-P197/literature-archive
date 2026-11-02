@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光学生成模型 · 让一束光直接生成图像 | 论文复现</title>
+<meta name="description" content="Nature 2025《Optical generative models》快照光学生成模型的复现记录：相位种子经角谱传播与衍射解码层成像，MNIST / Fashion-MNIST 十类条件生成。含 MATLAB 源码、已训练原型、结果图与复现报告。">
+<meta property="og:title" content="光学生成模型 · 让一束光直接生成图像">
+<meta property="og:description" content="相位种子 → 角谱传播 → 衍射解码层 → 传感器，一次前向生成一张图。">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="cn">论文复现实验室</span>
+      <span class="en">Paper Repro Lab</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#archive">档案</a>
+      <a href="../guide.html">方法</a>
+      <a href="_template.html">模板</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="in">
+    <a href="../index.html">档案</a>
+    <span class="sep">/</span>
+    <span class="cur">光学生成模型</span>
+    <span class="sep">·</span>
+    <span>Nature 644 · 2025</span>
+  </div>
+</div>
+
+<div class="anchorbar">
+  <div class="in">
+    <a href="#fundamentals">基础</a>
+    <a href="#paper">论文</a>
+    <a href="#results">结果</a>
+    <a href="#method">方法</a>
+    <a href="#start">上手</a>
+    <a href="#download">下载</a>
+    <a href="#cite">引用</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      Nature 644 · 2025 · 项目 02
+    </div>
+    <h1>让一束光<br>直接<em>生成一张图</em></h1>
+    <p class="lede">
+      快照光学生成模型把「生成」实现为一段固定的光学前向：一个 32×32 的<strong>相位种子</strong>被编码到 SLM 上，
+      经两段自由空间传播和一片<strong>可学习的衍射解码层</strong>，在传感器上落地成图。
+      这里是它在 MNIST 与 Fashion-MNIST 上的十类条件生成复现——源码、已训练原型、结果图、复现报告。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#results">
+        查看生成结果
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="#download">下载报告与源码</a>
+    </div>
+    <div class="chips">
+      <span class="chip">MATLAB R2021b+</span>
+      <span class="chip">Deep Learning Toolbox</span>
+      <span class="chip">MIT License</span>
+      <span class="chip">更新于 2026-10-27</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="n" data-count="0.0082" data-dec="4">0</div>
+        <div class="k">原型拟合 MSE<br>50 个种子平均</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="10">0</div>
+        <div class="k">条件生成类别<br>每类 8 个样本</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="50">0</div>
+        <div class="k">相位种子<br>每类 5 个原型</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="2">0</div>
+        <div class="k">数据集<br>MNIST / Fashion</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 01 FUNDAMENTALS ================= -->
+<section id="fundamentals">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
+      <h2>「用光生成」到底是什么意思</h2>
+      <p>先说清楚它不是什么：它不是把训练好的神经网络搬到光学硬件上跑。它是把<strong>解码器本身</strong>换成一片衍射光学元件，
+      让光在自由空间传播的物理过程就是那次前向计算。</p>
+    </div>
+
+    <div class="prose rv">
+      <p>一次曝光的时间里，光同时完成了三件事：<b>加载隐变量</b>（相位种子调制波前）、<b>做线性变换</b>（自由空间传播等价于一次卷积/傅里叶滤波）、
+      <b>输出结果</b>（传感器记录强度）。整个过程不需要时钟、不需要乘加器，也不需要把中间结果写回内存。</p>
+      <p>代价是三个硬约束。第一，<b>光是非负的模拟量</b>，传感器只能读强度，相位信息在读出时丢弃，所以网络必须设计成「相位进、强度出」。
+      第二，<b>参数量被面积限制</b>，解码层就是一片 400×400 的相位图，每个像素一个可训练参数。
+      第三，<b>没有非线性</b>，除了强度读出这一下平方，中间全是线性传播——这也是它只能做「快照」式生成的原因。</p>
+    </div>
+
+    <div class="band rv">
+      <div>
+        <h4>隐变量 → 相位</h4>
+        <p>32×32 的种子被上采样 10 倍到 320×320，每个像素对应 SLM 上一个 8 µm 的相位调制单元。</p>
+      </div>
+      <div>
+        <h4>相位 → 强度</h4>
+        <p>两段传播之间夹一片 400×400 的可学习相位屏，相当于解码器的权重。</p>
+      </div>
+      <div>
+        <h4>强度 → 图像</h4>
+        <p>传感器读到的 400×400 强度图中心裁 320×320，再下采样 10 倍回到 32×32。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
+      <h2>论文的快照模型：一条链，两个距离</h2>
+      <p>Chen 等人 2025 年发在 Nature 上的工作给了两条路线：快照式（一次前向）与迭代式（多次往返）。
+      本次复现的是前者，对应原文 Fig. 1 的装置与 Fig. 3c 的生成结果。</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>环节</th><th>参数</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>相位种子</td><td class="mono">32 × 32</td><td>隐变量，取自数字编码器或类内原型</td></tr>
+          <tr><td>上采样编码</td><td class="mono">320 × 320 @ 8 µm</td><td>对应原文式 (1)，零阶保持后乘到 SLM</td></tr>
+          <tr><td>SLM 调制</td><td class="mono">λ = 520 nm</td><td>相位型，<b>区域外必须置零</b>（见 04 节）</td></tr>
+          <tr><td>第一段传播</td><td class="mono">d₀,₁ = 120.1 mm</td><td>角谱法，式 (2)(3)</td></tr>
+          <tr><td>衍射解码层</td><td class="mono">400 × 400 相位</td><td>可训练参数，式 (4)</td></tr>
+          <tr><td>第二段传播</td><td class="mono">d₁,₂ = 96.4 mm</td><td>角谱法</td></tr>
+          <tr><td>读出</td><td class="mono">O = |U|²</td><td>式 (5)，中心裁 320 后下采样 10×</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="notes rv">
+      <p>原文还包含一条迭代式路线（多次往返、更强的表达能力，但每次生成要多次曝光）以及多波长 RGB 扩展。
+      这两部分本次<b>没有复现</b>，原因写在 <a href="#method">04 节</a>的差异说明里。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
+      <h2>生成结果：十类全部成形</h2>
+      <p>每个类别生成 8 个样本，样本之间由类内原型的场空间混合产生差异。同一套解码层被所有类别共享——
+      这正是它难的地方：一片固定的相位屏要同时服务十个类别。</p>
+    </div>
+
+    <div class="shots one rv">
+      <figure>
+        <div class="figbox"><img src="../assets/img/optgen/fig_generation_mnist.jpg" alt="MNIST 十类条件生成" data-lb></div>
+        <figcaption><b>MNIST</b>　十类手写数字，每类 8 个样本。数字的笔画粗细、倾斜角度随样本变化，
+        说明变化来自种子而不是噪声贴图。</figcaption>
+      </figure>
+    </div>
+
+    <div class="shots one rv">
+      <figure>
+        <div class="figbox"><img src="../assets/img/optgen/fig_generation_fashion.jpg" alt="Fashion-MNIST 十类条件生成" data-lb></div>
+        <figcaption><b>Fashion-MNIST</b>　十类服饰（T恤、裤、套衫、连衣裙、外套、凉鞋、衬衫、运动鞋、包、短靴）。
+        轮廓清楚，纹理细节弱于数字——服饰类的高频成分更多，受限于解码层分辨率。</figcaption>
+      </figure>
+    </div>
+
+    <div class="grid-2 rv" style="margin-top:30px">
+      <figure>
+        <div class="figbox"><img src="../assets/img/optgen/fig_prototypes_mnist.jpg" alt="目标与光学拟合对照" data-lb></div>
+        <figcaption><b>原型拟合</b>　上排是目标图像（类均值与真实样本各半混合），下排是光学前向实际得到的强度。
+        平均 MSE <b>0.0082</b>。</figcaption>
+      </figure>
+      <figure>
+        <div class="figbox"><img src="../assets/img/optgen/fig_preview_fashion.jpg" alt="Fashion 预览" data-lb></div>
+        <figcaption><b>Fashion 原型</b>　服饰类的种子与拟合结果。拟合 MSE <b>0.0089</b>，比 MNIST 略差。</figcaption>
+      </figure>
+    </div>
+
+    <div class="tbl-wrap rv" style="margin-top:30px">
+      <table>
+        <thead><tr><th>指标</th><th>MNIST</th><th>Fashion-MNIST</th></tr></thead>
+        <tbody>
+          <tr><td>原型拟合 MSE</td><td class="mono">0.0082</td><td class="mono">0.0089</td></tr>
+          <tr><td>原型数量</td><td class="mono">10 类 × 5</td><td class="mono">10 类 × 5</td></tr>
+          <tr><td>每类生成样本</td><td class="mono">8</td><td class="mono">8</td></tr>
+          <tr><td>原型优化耗时</td><td class="mono">≈ 18 min</td><td class="mono">≈ 18 min</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
+      <h2>复现方法：把端到端拆成三个阶段</h2>
+      <p>论文的端到端训练需要数据中心级别的算力预算。在有限的训练预算下直接端到端跑，会稳定塌缩到「条件均值解」——
+      所有类别输出同一团平均图像。这里的做法是把它拆开，让每一步都能单独验收。</p>
+    </div>
+
+    <div class="rv">
+      <div class="step">
+        <div class="num">01</div>
+        <div>
+          <h4>原型优化：50 个种子 + 一片解码层</h4>
+          <p>每类取 K = 5 个相位种子，全部种子与一片共享解码层一起作为自由参数，目标是「0.5 × 类均值 + 0.5 × 真实样本」的混合图。
+          训练分两段：先让种子逐任务轮流拟合（解码层用小学习率），再冻结解码层、热启动重拟合每个种子（抛光）。
+          产物就是 <code>prototypes_mnist.mat</code> / <code>prototypes_fashion.mat</code>。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div>
+          <h4>场空间混合：从 5 个原型生成任意多样本</h4>
+          <p>对同一类的种子复数场做随机凸组合，再取相位投到 SLM 上，然后走一次正常的光学前向。
+          物理上这等价于把两张相位图叠加后重新量化，因此生成的样本仍落在同一个物理可实现集里，不是数字域的插值。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div>
+          <h4>编码器蒸馏：补上论文的完整架构</h4>
+          <p>训练一个三层全连接 + 类别嵌入的数字编码器，把「噪声 z + 类别」映射到相位种子，监督目标是阶段一得到的种子。
+          这一步是纯数字回归，不参与光学损失，完成后就得到论文图 1 的完整管线。</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px">端到端为什么会塌缩</h3>
+    <p>这一节是本复现最有价值的部分——四个原因都实际踩过，按影响从大到小排列。</p>
+
+    <div class="notes rv">
+      <p><b>① SLM 区域外用零填充，注入了假的平面波。</b>把 320×320 的相位图补零到 400×400 时，
+      <code>exp(i·0) = 1</code>，等于在四周加了一圈振幅为 1 的通光孔径。这圈平面波的衍射图样与种子无关、恒定不变，
+      却主导了传感器读数，于是所有训练都收敛到同一张「平均图」。修正是把 SLM 区域外的复振幅<b>置零</b>（暗孔径），
+      而不是相位置零。</p>
+      <p><b>② 共享解码层存在条件均值吸引子。</b>解码层从随机初始化开始、对一批随机散斑种子做批量训练时，
+      梯度会先把它推向「所有目标的均值」，随后把种子锁死在这个盆地里。并行训练、交替训练、GS 算法都逃不出来。
+      逐任务流 + 低解码层学习率 + 冻结抛光的三件套才能绕开。</p>
+      <p><b>③ 单精度梯度噪声地板。</b>角谱传播带 1/N² 归一化，原始损失的梯度量级只有 1e-7，正好卡在 float32 舍入边缘。
+      损失需要乘 1e6 把信噪比抬起来，否则梯度基本是噪声。</p>
+      <p><b>④ 类别条件信号被噪声淹没。</b>32 维类别嵌入混进 1024 维噪声后，梯度信号被压掉几个数量级。
+      Adam 放大梯度无效，必须给编码器单独的学习率组，并用 FiLM 式的直通通路把类别信息送进去。</p>
+    </div>
+
+    <h3 style="margin-top:36px">与论文的差异</h3>
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>项目</th><th>论文</th><th>本复现</th><th>影响</th></tr></thead>
+        <tbody>
+          <tr><td>训练方式</td><td>端到端联合优化</td><td class="mono">三阶段分解</td><td>最终光学结构与论文一致，但优化路径不同</td></tr>
+          <tr><td>多样性来源</td><td>DDPM 教师采样</td><td class="mono">类内原型场混合</td><td>多样性较低，限于 5 个原型张成的流形</td></tr>
+          <tr><td>强度归一化</td><td>逐图最大值归一化</td><td class="mono">逐目标亮度匹配</td><td>影响 MSE 绝对值的可比性</td></tr>
+          <tr><td>多波长 RGB</td><td>已实现</td><td class="warn">未复现</td><td>需三通道对齐与色差补偿</td></tr>
+          <tr><td>迭代式模型</td><td>已实现</td><td class="warn">未复现</td><td>需多次往返与 5 层解码器</td></tr>
+          <tr><td>Van Gogh 高分辨生成</td><td>已实现</td><td class="warn">未复现</td><td>需 1000 步 DDPM 与更大算力预算</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 START ================= -->
+<section id="start">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
+      <h2>三步跑完</h2>
+      <p>需要 MATLAB R2021b 或更新版本，以及 Deep Learning Toolbox。数据脚本会自动下载 MNIST 与 Fashion-MNIST。</p>
+    </div>
+
+    <div class="codeblock rv">
+      <div class="codehead"><span>matlab — 完整流程</span>
+        <button class="copybtn" data-copy="#mat-cmd">复制命令</button></div>
+      <pre id="mat-cmd"><span class="c">% 阶段一：原型优化（每个数据集约 18 分钟）</span>
+setenv('OGEN_DATASET','mnist');   train_prototypes
+setenv('OGEN_DATASET','fashion'); train_prototypes
+
+<span class="c">% 阶段二：生成样本网格（约 1 分钟）</span>
+setenv('OGEN_DATASET','mnist');   generate_mixture
+setenv('OGEN_DATASET','fashion'); generate_mixture
+
+<span class="c">% 阶段三（可选）：编码器蒸馏，得到论文的完整管线（约 1.5 小时）</span>
+setenv('OGEN_DATASET','mnist');   train_encoder_distill</pre>
+    </div>
+
+    <div class="feat rv">
+      <div class="row"><div class="k">train_prototypes.m</div><div class="v">阶段一：两段式原型优化（任务流 + 冻结抛光）</div></div>
+      <div class="row"><div class="k">generate_mixture.m</div><div class="v">阶段二：场空间混合采样，输出十类生成网格</div></div>
+      <div class="row"><div class="k">train_encoder_distill.m</div><div class="v">阶段三：数字编码器蒸馏</div></div>
+      <div class="row"><div class="k">forward_from_phase.m</div><div class="v">核心前向：相位种子 → 角谱传播 → 解码层 → 强度</div></div>
+      <div class="row"><div class="k">as_propagate.m</div><div class="v">角谱传播，带传递函数缓存，对 B = 1 自动复制</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
+      <h2>资源下载</h2>
+      <p>源码、已训练原型与复现报告。原型权重可以直接加载出图，不需要重新训练。</p>
+    </div>
+
+    <div class="dl-grid rv">
+      <div class="dl-card primary">
+        <div class="ver">REPORT · 2026-10-27</div>
+        <h3>复现报告（中文）</h3>
+        <div class="sub">含原理推导、四类塌缩原因分析与完整实验记录</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>装置参数与论文公式逐条对应</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>塌缩现象的复现实验与修正前后对比</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>未复现部分的说明</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="../downloads/optical-generative-models-report.pdf">
+            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>下载 PDF
+          </a>
+        </div>
+        <div class="meta-row"><span>PDF</span><span>≈ 900 KB</span><span>中文</span></div>
+      </div>
+
+      <div class="dl-card">
+        <div class="ver">SOURCE · MATLAB</div>
+        <h3>源码与原型</h3>
+        <div class="sub">11 个 MATLAB 脚本 + 2 个数据集的原型权重</div>
+        <div class="pathline" style="margin-bottom:14px">reproductions/optical-generative-models/</div>
+        <div class="dl-actions">
+          <a class="btn btn-ghost" href="https://github.com/Alice-P197/paper-repro-lab/tree/main/reproductions/optical-generative-models" target="_blank" rel="noopener">浏览目录</a>
+          <button class="copybtn" style="padding:9px 14px;font-size:12px"
+            data-copy-text="git clone https://github.com/Alice-P197/paper-repro-lab.git">复制克隆命令</button>
+        </div>
+        <div class="meta-row"><span>MIT</span><span>≈ 2 MB</span><span>2026-10-27</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 CITE ================= -->
+<section id="cite">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
+      <h2>引用与声明</h2>
+    </div>
+
+    <div class="bibtex rv">
+      <button class="copybtn" data-copy="#bib">复制</button>
+      <pre id="bib">@article{chen2025optical,
+  title   = {Optical generative models},
+  author  = {Chen, Shaowei and Li, Yuhang and Wang, Yide and Chen, Hong and Ozcan, Aydogan},
+  journal = {Nature},
+  volume  = {644},
+  pages   = {903--911},
+  year    = {2025}
+}</pre>
+    </div>
+
+    <div class="notes rv">
+      <p>代码以 MIT 许可发布。论文中的插图版权归原作者与期刊所有，此处仅用于结果对照。</p>
+      <p>这是一个独立复现，不是论文作者的官方实现。文中标注「未复现」的部分确实没有做，
+      不要在引用本页结论时把它们当作已完成。</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="metae-former.html">
+      <div class="dir">← 上一篇</div>
+      <div class="tt">MetaE-former：用邻域注意力代理模型设计大尺寸超表面</div>
+    </a>
+    <a class="next" href="../index.html#archive">
+      <div class="dir">返回 →</div>
+      <div class="tt">全部复现档案</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      论文复现实验室
+      <span>Paper Repro Lab</span>
+    </div>
+    <div class="foot-links">
+      <a href="../index.html#archive">全部档案</a>
+      <a href="../guide.html">复现方法</a>
+      <a href="_template.html">页面模板</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
+<div class="toast" id="toast">已复制</div>
+
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

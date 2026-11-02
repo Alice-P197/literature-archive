@@ -3,1110 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MetaE-former · 神经网络驱动的超表面逆向设计 | 论文复现</title>
-<meta name="description" content="PhotoniX 2026 论文 MetaE-former 的纯 CPU 复现：邻域注意力 Transformer 代理模型、可微 BPM、5µm patch 拼接逆向设计。含完整代码包、预训练权重、复现结果与零基础教程。">
-<meta property="og:title" content="MetaE-former · 神经网络驱动的超表面逆向设计">
-<meta property="og:description" content="从一篇 PhotoniX 论文到 40 分钟可跑的完整链路：源码 / 权重 / 结果图 / 教程。">
+<title>论文复现实验室 · Paper Repro Lab</title>
+<meta name="description" content="把机器学习、计算成像与光学设计方向的论文拆成可运行、可修改、可验证的代码档案：源码、预训练权重、复现结果、逐项差异说明与上手教程。">
+<meta property="og:title" content="论文复现实验室 · Paper Repro Lab">
+<meta property="og:description" content="每篇论文一份可运行时档案：源码、权重、结果、差异说明。">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
-<style>
-:root{
-  --paper:#fbfaf7;
-  --paper-2:#f4f1ea;
-  --ink:#16181a;
-  --ink-2:#3d4247;
-  --muted:#6b7280;
-  --line:#e0dbd1;
-  --line-2:#cfc8ba;
-  --teal:#1f4e5f;
-  --teal-2:#2b6b80;
-  --ochre:#a4581f;
-  --code-bg:#1b2124;
-  --code-ink:#dfe6e6;
-  --serif:"Noto Serif SC","Songti SC","Source Han Serif SC",Georgia,"SimSun",serif;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  --mono:"JetBrains Mono","Cascadia Code",ui-monospace,Consolas,"Courier New",monospace;
-  --max:1080px;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:76px}
-body{
-  background:var(--paper);color:var(--ink);
-  font-family:var(--sans);font-size:16px;line-height:1.75;
-  -webkit-font-smoothing:antialiased;
-}
-img{max-width:100%;display:block}
-a{color:var(--teal);text-decoration:none}
-a:hover{text-decoration:underline;text-underline-offset:3px}
-code{font-family:var(--mono);font-size:.9em}
-
-/* ---------- nav ---------- */
-.nav{
-  position:sticky;top:0;z-index:100;
-  background:rgba(251,250,247,.92);backdrop-filter:saturate(180%) blur(8px);
-  border-bottom:1px solid var(--line);
-}
-.nav-in{
-  max-width:var(--max);margin:0 auto;padding:0 24px;
-  height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;
-}
-.brand{display:flex;flex-direction:column;line-height:1.15;text-decoration:none}
-.brand:hover{text-decoration:none}
-.brand .cn{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.02em}
-.brand .en{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:3px}
-.nav-links{display:flex;align-items:center;gap:26px;font-size:14px}
-.nav-links a{color:var(--ink-2);text-decoration:none;position:relative;padding:4px 0}
-.nav-links a::after{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:1.5px;
-  background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .25s ease;
-}
-.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
-.nav-links a.active{color:var(--teal);font-weight:600}
-.nav-gh{
-  display:inline-flex;align-items:center;gap:6px;
-  border:1px solid var(--line-2);border-radius:2px;padding:5px 11px;
-  font-size:13px;color:var(--ink-2) !important;
-}
-.nav-gh:hover{background:var(--paper-2);text-decoration:none}
-.nav-gh svg{width:15px;height:15px;fill:currentColor}
-
-/* ---------- layout ---------- */
-.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
-section{padding:88px 0;border-top:1px solid var(--line)}
-section:first-of-type{border-top:none}
-
-/* ---------- hero ---------- */
-.hero{padding:80px 0 64px;position:relative;overflow:hidden}
-.hero::before{
-  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(to right,rgba(22,24,26,.035) 1px,transparent 1px),
-    linear-gradient(to bottom,rgba(22,24,26,.035) 1px,transparent 1px);
-  background-size:44px 44px;
-  mask-image:radial-gradient(ellipse 70% 60% at 15% 0%,#000 20%,transparent 75%);
-  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 15% 0%,#000 20%,transparent 75%);
-}
-.hero > .wrap{position:relative;z-index:1}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:10px;
-  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:26px;
-}
-.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#3f8f5f;box-shadow:0 0 0 3px rgba(63,143,95,.15)}
-h1{
-  font-family:var(--serif);font-weight:700;
-  font-size:clamp(34px,5.2vw,58px);line-height:1.18;letter-spacing:-.01em;
-  margin-bottom:26px;max-width:16em;
-}
-h1 em{font-style:italic;color:var(--teal);white-space:nowrap;
-  background-image:linear-gradient(rgba(31,78,95,.13),rgba(31,78,95,.13));
-  background-repeat:no-repeat;
-  background-size:100% .30em;
-  background-position:0 88%;
-}
-.lede{font-size:17.5px;line-height:1.85;color:var(--ink-2);max-width:44em;margin-bottom:34px}
-.lede strong{color:var(--ink);font-weight:600}
-
-.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
-.btn{
-  display:inline-flex;align-items:center;gap:9px;
-  padding:11px 22px;border-radius:2px;font-size:14.5px;font-weight:600;
-  text-decoration:none !important;transition:all .18s ease;border:1px solid transparent;
-}
-.btn-primary{background:var(--ink);color:var(--paper)}
-.btn-primary:hover{background:var(--teal);transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
-.btn-ghost:hover{border-color:var(--ink);background:var(--paper-2);transform:translateY(-1px)}
-.btn svg{width:15px;height:15px;fill:currentColor}
-
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:44px}
-.chip{
-  font-family:var(--mono);font-size:11px;letter-spacing:.04em;
-  color:var(--ink-2);background:var(--paper-2);
-  border:1px solid var(--line);border-radius:2px;padding:4px 9px;
-}
-
-.stats{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  border:1px solid var(--line);background:#fff;
-}
-.stat{padding:22px 20px;border-right:1px solid var(--line)}
-.stat:last-child{border-right:none}
-.stat .n{
-  font-family:var(--serif);font-size:30px;font-weight:700;line-height:1.1;
-  color:var(--teal);letter-spacing:-.01em;
-}
-.stat .n small{font-size:16px;font-weight:600;margin-left:1px}
-.stat .k{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.55}
-
-/* ---------- section head ---------- */
-.shead{margin-bottom:44px}
-.kicker{
-  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--ochre);margin-bottom:14px;display:flex;align-items:center;gap:10px;
-}
-.kicker .num{font-weight:700}
-.kicker .bar{width:28px;height:1px;background:var(--line-2)}
-h2{
-  font-family:var(--serif);font-weight:700;font-size:clamp(25px,3.2vw,34px);
-  line-height:1.3;letter-spacing:-.005em;margin-bottom:16px;
-}
-.shead p{font-size:16px;color:var(--ink-2);max-width:46em;line-height:1.8}
-
-h3{font-family:var(--serif);font-size:19px;font-weight:700;margin-bottom:10px;line-height:1.4}
-p + h3{margin-top:30px}
-
-/* ---------- prose blocks ---------- */
-.prose p{margin-bottom:14px;color:var(--ink-2);max-width:46em}
-.prose p strong{color:var(--ink)}
-.prose ul{list-style:none;margin:0 0 16px}
-.prose ul li{position:relative;padding-left:20px;margin-bottom:8px;color:var(--ink-2)}
-.prose ul li::before{
-  content:"";position:absolute;left:2px;top:.72em;
-  width:5px;height:5px;background:var(--ochre);border-radius:50%;
-}
-
-/* ---------- concept cards ---------- */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-
-.card{
-  background:#fff;border:1px solid var(--line);padding:22px 22px 20px;
-  transition:border-color .18s ease,box-shadow .18s ease;
-}
-.card:hover{border-color:var(--line-2);box-shadow:0 2px 14px rgba(22,24,26,.045)}
-.card h4{font-family:var(--serif);font-size:15.5px;font-weight:700;margin-bottom:8px}
-.card p{font-size:13.5px;line-height:1.72;color:var(--ink-2)}
-.card .tag{
-  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);display:block;margin-bottom:9px;
-}
-.numcard{position:relative;padding-top:34px}
-.numcard .idx{
-  position:absolute;top:16px;left:22px;
-  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ochre);letter-spacing:.08em;
-}
-
-/* ---------- figure ---------- */
-figure{margin:26px 0}
-.figbox{
-  border:1px solid var(--line);background:#fff;padding:14px;
-}
-.figbox img{width:100%;height:auto;cursor:zoom-in}
-figcaption{
-  font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:11px;
-  padding-left:2px;border-left:2px solid var(--line-2);padding-left:10px;
-}
-figcaption b{color:var(--ink-2);font-weight:600}
-
-/* ---------- compare ---------- */
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0}
-.compare figure{margin:0}
-.compare .lab{
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:7px;
-}
-.compare .lab .sq{width:7px;height:7px;border:1px solid var(--line-2)}
-.compare .lab.paper .sq{background:var(--line-2)}
-.compare .lab.ours .sq{background:var(--ochre);border-color:var(--ochre)}
-
-/* ---------- code ---------- */
-.codeblock{
-  margin:16px 0;border:1px solid #2c3438;border-radius:2px;overflow:hidden;background:var(--code-bg);
-}
-.codehead{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px;background:#232b2f;border-bottom:1px solid #2c3438;
-  font-family:var(--mono);font-size:11px;color:#8b9a9e;letter-spacing:.04em;
-}
-.copybtn{
-  background:transparent;border:1px solid #3a4448;color:#9aa9ad;cursor:pointer;
-  font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:2px;
-  transition:all .16s ease;letter-spacing:.04em;
-}
-.copybtn:hover{background:#2f393d;color:#dfe6e6;border-color:#4a565a}
-pre{padding:16px 18px;overflow-x:auto;color:var(--code-ink);font-size:13px;line-height:1.78}
-pre .c{color:#6f8a8f;font-style:italic}
-pre .k{color:#8fc7d6}
-pre .s{color:#c9b48a}
-
-/* ---------- table ---------- */
-.tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);background:#fff}
-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
-th{
-  text-align:left;padding:11px 14px;font-weight:600;font-size:11.5px;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-  border-bottom:1px solid var(--line-2);background:var(--paper-2);white-space:nowrap;
-}
-td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
-tr:last-child td{border-bottom:none}
-td.mono,th.mono{font-family:var(--mono);font-size:12.5px}
-td.ok{color:var(--teal);font-weight:600}
-td.warn{color:var(--ochre);font-weight:600}
-
-/* ---------- download ---------- */
-.dl-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start}
-.dl-card{background:#fff;border:1px solid var(--line);padding:26px}
-.dl-card.primary{border-color:var(--line-2);box-shadow:0 1px 0 rgba(22,24,26,.03)}
-.dl-card .ver{
-  font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:12px;
-}
-.dl-card h3{font-size:20px;margin-bottom:6px}
-.dl-card .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
-.checklist{list-style:none;margin:0 0 22px}
-.checklist li{
-  display:flex;gap:9px;font-size:13.5px;color:var(--ink-2);margin-bottom:9px;line-height:1.6;
-}
-.checklist li svg{width:14px;height:14px;flex:0 0 14px;margin-top:4px;fill:none;stroke:var(--teal);stroke-width:2.2}
-.dl-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.meta-row{
-  display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;
-  color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:18px;
-}
-.pathline{
-  font-family:var(--mono);font-size:11.5px;color:var(--ink-2);background:var(--paper-2);
-  border:1px solid var(--line);padding:5px 9px;word-break:break-all;line-height:1.6;
-}
-
-/* ---------- steps ---------- */
-.step{
-  display:grid;grid-template-columns:64px 1fr;gap:20px;
-  padding:24px 0;border-bottom:1px solid var(--line);
-}
-.step:last-child{border-bottom:none}
-.step .num{
-  font-family:var(--serif);font-size:26px;font-weight:700;color:var(--line-2);line-height:1;
-}
-.step h4{font-family:var(--serif);font-size:16.5px;font-weight:700;margin-bottom:7px}
-.step p{font-size:14px;color:var(--ink-2);line-height:1.75;max-width:44em}
-
-/* ---------- citation ---------- */
-.bibtex{
-  background:var(--paper-2);border:1px solid var(--line);padding:18px 18px 14px;
-  position:relative;margin:16px 0;
-}
-.bibtex pre{color:var(--ink-2);font-size:12.5px;padding:0;background:none;line-height:1.85}
-.bibtex .copybtn{border-color:var(--line-2);color:var(--muted);position:absolute;top:12px;right:12px}
-.bibtex .copybtn:hover{background:#fff;color:var(--ink);border-color:var(--ink)}
-
-.notes{border-left:2px solid var(--ochre);padding:2px 0 2px 18px;margin-top:26px}
-.notes p{font-size:13.5px;color:var(--ink-2);margin-bottom:10px;line-height:1.78}
-
-/* ---------- footer ---------- */
-footer{
-  border-top:1px solid var(--line);padding:44px 0 56px;margin-top:0;
-}
-.foot-in{
-  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
-}
-.foot-brand{font-family:var(--serif);font-size:15px;font-weight:700}
-.foot-brand span{
-  display:block;font-family:var(--mono);font-size:9.5px;font-weight:400;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:5px;
-}
-.foot-links{display:flex;gap:20px;font-size:13px;color:var(--muted)}
-.foot-links a{color:var(--muted)}
-.foot-links a:hover{color:var(--teal)}
-
-/* ---------- lightbox ---------- */
-.lb{
-  position:fixed;inset:0;z-index:999;background:rgba(12,14,15,.93);
-  display:none;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;
-}
-.lb.on{display:flex}
-.lb img{max-width:95vw;max-height:92vh;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-.lb .close{
-  position:absolute;top:20px;right:26px;color:#fff;font-size:30px;line-height:1;
-  font-family:var(--mono);opacity:.7;
-}
-
-/* ---------- toast ---------- */
-.toast{
-  position:fixed;bottom:28px;left:50%;transform:translate(-50%,14px);
-  background:var(--ink);color:var(--paper);font-size:13px;
-  padding:9px 18px;border-radius:2px;opacity:0;pointer-events:none;
-  transition:all .24s ease;z-index:1000;font-family:var(--mono);
-}
-.toast.on{opacity:1;transform:translate(-50%,0)}
-
-/* ---------- reveal ---------- */
-.rv{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
-.rv.in{opacity:1;transform:none}
-
-@media (max-width:900px){
-  .grid-4{grid-template-columns:1fr 1fr}
-  .grid-3{grid-template-columns:1fr}
-  .dl-grid{grid-template-columns:1fr}
-  .compare{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr 1fr}
-  .stat:nth-child(2){border-right:none}
-  .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}
-  .nav-links a:not(.nav-gh){display:none}
-}
-@media (max-width:640px){
-  section{padding:60px 0}
-  .hero{padding:52px 0 44px}
-  .grid-2{grid-template-columns:1fr}
-  .grid-4{grid-template-columns:1fr}
-  .step{grid-template-columns:44px 1fr;gap:14px}
-  .wrap,.nav-in{padding:0 18px}
-}
-</style>
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-in">
-    <a class="brand" href="#top">
-      <span class="cn">MetaE-former 复现</span>
-      <span class="en">Neural Metasurface Design</span>
+    <a class="brand" href="index.html">
+      <span class="cn">论文复现实验室</span>
+      <span class="en">Paper Repro Lab</span>
     </a>
     <div class="nav-links">
-      <a href="#fundamentals">基础知识</a>
-      <a href="#paper">论文</a>
-      <a href="#results">复现成果</a>
-      <a href="#method">方法</a>
-      <a href="#start">快速上手</a>
-      <a href="#download">下载</a>
-      <a class="nav-gh" href="https://github.com/Alice-P197/metae-former" target="_blank" rel="noopener">
-        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      <a href="index.html#archive">档案</a>
+      <a href="guide.html">方法</a>
+      <a href="reproductions/_template.html">模板</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
       </a>
     </div>
   </div>
 </nav>
 
-<!-- ================= HERO ================= -->
 <header class="hero" id="top">
   <div class="wrap">
     <div class="eyebrow">
       <span class="dot"></span>
-      PhotoniX 2026 · 论文复现 · CPU-only
+      复现档案 · 持续更新
     </div>
-    <h1>让神经网络学会设计超表面<br>在<em>一台没有 GPU 的电脑</em>上</h1>
+    <h1>把论文里的方法<br>拆成能跑、能改、<em>能验证</em>的代码</h1>
     <p class="lede">
-      这是 <strong>MetaE-former</strong> 的完整复现：把论文里的物理链路、邻域注意力代理模型、5 µm patch 拼接逆向设计，
-      整理成<strong>源码、已训练权重、结果图、零基础教程</strong>四件套。
-      从装环境到出第一张光斑图，约 30 分钟；从零到读懂每一行代码，约两天。
+      这里收录我逐篇复现的论文。每篇固定交付同样四样东西：<strong>可运行的源码</strong>、
+      <strong>已训练的权重</strong>、<strong>和原文并排的结果图</strong>，
+      以及一份<strong>写清哪里做不到的差异说明</strong>。
+      不是演示视频，也不是截图拼贴——是在自己机器上运行就能得到同一张图的东西。
     </p>
     <div class="cta">
-      <a class="btn btn-primary" href="#download">
-        <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>
-        下载代码包 v1.0.0 · 12 MB
+      <a class="btn btn-primary" href="#archive">
+        浏览复现档案
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
       </a>
-      <a class="btn btn-ghost" href="#results">查看复现结果</a>
-      <a class="btn btn-ghost" href="https://github.com/Alice-P197/metae-former/blob/main/TUTORIAL.md" target="_blank" rel="noopener">阅读教程</a>
+      <a class="btn btn-ghost" href="guide.html">复现方法</a>
+      <a class="btn btn-ghost" href="reproductions/_template.html">页面模板</a>
     </div>
     <div class="chips">
-      <span class="chip">PyTorch 2.11 · CPU</span>
-      <span class="chip">0.82M 参数</span>
-      <span class="chip">无需 GPU</span>
+      <span class="chip">源码 + 权重 + 结果</span>
+      <span class="chip">逐项差异说明</span>
       <span class="chip">MIT License</span>
       <span class="chip">更新于 2026-11-02</span>
     </div>
 
     <div class="stats">
       <div class="stat">
-        <div class="n" data-count="38.4" data-suffix="k" data-dec="1">0</div>
-        <div class="k">预训练样本<br>流式生成，零磁盘占用</div>
+        <div class="n" data-count="2">0</div>
+        <div class="k">已收录复现<br>均含完整代码与权重</div>
       </div>
       <div class="stat">
         <div class="n" data-count="0.112" data-dec="3">0</div>
-        <div class="k">验证集归一化 MAE<br>论文区间 0.037–0.114</div>
+        <div class="k">代理模型归一化 MAE<br>论文区间 0.037–0.114</div>
       </div>
       <div class="stat">
-        <div class="n" data-count="0.82" data-suffix="M" data-dec="2">0</div>
-        <div class="k">代理模型参数<br>论文规模约 40 M</div>
+        <div class="n" data-count="38.4" data-suffix="k" data-dec="1">0</div>
+        <div class="k">流式预训练样本<br>MetaE-former 训练集</div>
       </div>
       <div class="stat">
-        <div class="n" data-count="819" data-suffix="ms">0</div>
-        <div class="k">单 patch 单次迭代<br>8 线程实测</div>
+        <div class="n" data-count="10">0</div>
+        <div class="k">条件生成类别<br>MNIST / Fashion-MNIST</div>
       </div>
     </div>
   </div>
 </header>
 
-<!-- ================= 01 FUNDAMENTALS ================= -->
-<section id="fundamentals">
+<!-- ================= 01 ARCHIVE ================= -->
+<section id="archive">
   <div class="wrap">
     <div class="shead rv">
-      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
-      <h2>神经网络超表面设计，到底在做什么</h2>
-      <p>如果你只记得一句话：<b>用一块可编程的“相位画布”塑造光，再用神经网络把“想要的图案”反解成“该画什么”。</b>
-      下面四小节把这个直觉拆开。</p>
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Archive</div>
+      <h2>复现档案</h2>
+      <p>每张卡片对应一份独立的复现记录。点进去能看到方法拆解、与原文并排的结果，以及可直接下载的代码包。</p>
     </div>
 
-    <div class="prose rv">
-      <h3>1.1 超表面：用亚波长结构雕刻波前</h3>
-      <p>普通透镜靠曲面折射聚焦，厚度以毫米计。超表面（metasurface）换成一片几百纳米厚的结构阵列：
-      每个位置立一根截面尺寸不同的柱子，光穿过时局部相位被改变，<b>整片柱子合起来</b>就形成任意形状的波前。</p>
-      <p>本项目的最小单元是这样的：5 µm × 5 µm 的方块上，25 × 25 根方柱，柱距 200 nm，高度统一 800 nm，
-      材料折射率可在 1.0（空气）到 3.526（非晶硅）之间取任意等效值。相位累积近似 φ ≈ k₀·(n−1)·h，
-      所以<b>调折射率 = 调相位</b>，这张 25×25 的折射率图就是全部的自由变量。</p>
+    <div class="pgrid rv" id="pgrid">
+      <noscript>
+        <a class="pcard" href="reproductions/metae-former.html">
+          <div class="body"><h3>MetaE-former：用邻域注意力代理模型设计大尺寸超表面</h3>
+          <p class="sum">PhotoniX 2026 · 已复现</p></div>
+        </a>
+        <a class="pcard" href="reproductions/optical-generative-models.html">
+          <div class="body"><h3>光学生成模型：让光在自由空间里完成一次生成</h3>
+          <p class="sum">Nature 644 · 2025 · 已复现</p></div>
+        </a>
+      </noscript>
     </div>
 
-    <!-- SVG: metasurface schematic -->
-    <figure class="rv">
-      <div class="figbox" style="padding:24px 18px">
-        <svg viewBox="0 0 900 260" style="width:100%;height:auto" role="img" aria-label="超表面结构示意图">
-          <defs>
-            <linearGradient id="waveIn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#1f4e5f" stop-opacity=".05"/>
-              <stop offset="100%" stop-color="#1f4e5f" stop-opacity=".55"/>
-            </linearGradient>
-            <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 z" fill="#16181a"/>
-            </marker>
-          </defs>
-          <!-- incident plane wave -->
-          <g opacity=".55">
-            <line x1="30" y1="8" x2="30" y2="120" stroke="#1f4e5f" stroke-width="1"/>
-            <line x1="70" y1="8" x2="70" y2="120" stroke="#1f4e5f" stroke-width="1"/>
-            <line x1="110" y1="8" x2="110" y2="120" stroke="#1f4e5f" stroke-width="1"/>
-            <line x1="150" y1="8" x2="150" y2="120" stroke="#1f4e5f" stroke-width="1"/>
-            <line x1="190" y1="8" x2="190" y2="120" stroke="#1f4e5f" stroke-width="1"/>
-            <line x1="230" y1="8" x2="230" y2="120" stroke="#1f4e5f" stroke-width="1"/>
-          </g>
-          <text x="30" y="242" font-family="ui-monospace,monospace" font-size="11" fill="#6b7280">入射平面波 λ=1064 nm</text>
-          <line x1="188" y1="130" x2="188" y2="168" stroke="#16181a" stroke-width="1.2" marker-end="url(#ar)"/>
-
-          <!-- pillars -->
-          <g>
-            <rect x="26" y="170" width="12" height="30" fill="#16181a"/>
-            <rect x="46" y="182" width="12" height="18" fill="#16181a"/>
-            <rect x="66" y="160" width="12" height="40" fill="#16181a"/>
-            <rect x="86" y="176" width="12" height="24" fill="#16181a"/>
-            <rect x="106" y="150" width="12" height="50" fill="#16181a"/>
-            <rect x="126" y="168" width="12" height="32" fill="#16181a"/>
-            <rect x="146" y="158" width="12" height="42" fill="#16181a"/>
-            <rect x="166" y="178" width="12" height="22" fill="#16181a"/>
-            <rect x="186" y="166" width="12" height="34" fill="#16181a"/>
-            <rect x="206" y="184" width="12" height="16" fill="#16181a"/>
-            <rect x="226" y="172" width="12" height="28" fill="#16181a"/>
-          </g>
-          <!-- substrate -->
-          <rect x="20" y="200" width="224" height="8" fill="#cfc8ba"/>
-          <text x="26" y="228" font-family="ui-monospace,monospace" font-size="10" fill="#6b7280">25 × 25 pillars · pitch 200 nm · h=800 nm</text>
-
-          <!-- arrow to output -->
-          <line x1="268" y1="150" x2="320" y2="150" stroke="#a4581f" stroke-width="1.4" marker-end="url(#ar)"/>
-          <text x="268" y="138" font-family="ui-monospace,monospace" font-size="10" fill="#a4581f">emergent field</text>
-
-          <!-- output wavefront (curved) -->
-          <g>
-            <path d="M360 60 Q470 110 580 60" fill="none" stroke="#1f4e5f" stroke-width="1.6" opacity=".85"/>
-            <path d="M360 86 Q470 136 580 86" fill="none" stroke="#1f4e5f" stroke-width="1.4" opacity=".6"/>
-            <path d="M360 112 Q470 162 580 112" fill="none" stroke="#1f4e5f" stroke-width="1.2" opacity=".4"/>
-            <path d="M360 138 Q470 188 580 138" fill="none" stroke="#1f4e5f" stroke-width="1" opacity=".25"/>
-            <path d="M360 164 Q470 214 580 164" fill="none" stroke="#1f4e5f" stroke-width="1" opacity=".13"/>
-          </g>
-          <line x1="470" y1="112" x2="470" y2="196" stroke="#a4581f" stroke-width="1" stroke-dasharray="3 3"/>
-          <circle cx="470" cy="112" r="3.5" fill="#a4581f"/>
-          <text x="480" y="206" font-family="ui-monospace,monospace" font-size="10" fill="#a4581f">focus</text>
-
-          <!-- right labels -->
-          <g font-family="ui-monospace,monospace" font-size="10.5" fill="#3d4247">
-            <text x="612" y="60">任意波前 =</text>
-            <text x="612" y="80">逐点相位拼接</text>
-            <text x="612" y="112" fill="#6b7280">φ(x,y) ≈ k₀(n(x,y)−1)h</text>
-            <text x="612" y="140" fill="#6b7280">自由度 = 25×25 折射率</text>
-            <text x="612" y="168" fill="#6b7280">→ 设计问题 = 反解结构</text>
-          </g>
-        </svg>
+    <div class="band rv" style="margin-top:26px">
+      <div>
+        <h4>一眼看清差距</h4>
+        <p>每篇都有一张「论文做法 / 本复现做法」的逐项对照表，包括网络规模、数据来源、求解器口径。不一致的地方不藏。</p>
       </div>
-      <figcaption><b>图 1</b>　超表面的工作原理。相位累积与折射率成正比，因此“设计光场”等价于“反解一张折射率图”。</figcaption>
-    </figure>
-
-    <div class="prose rv">
-      <h3>1.2 为什么必须请神经网络出场</h3>
-      <p>正向问题（给结构、算光场）已经很难：严格的解是 Maxwell 方程，工业上用 FDTD / RCWA，
-      算一个 5 µm 小块要几秒到几分钟。而逆向设计需要对结构和相位反复试探——如果每一步都跑全波仿真，
-      一张 1 mm 口径的超表面要算几天。</p>
-      <p>神经网络的作用是<b>把这个慢求解器“蒸馏”成一个快 1000 倍的替身</b>：先让真求解器标注几十万组
-      (结构 → 光场) 数据，训练一个网络去模仿；训练好之后，把它塞进优化循环，梯度下降每一步只花毫秒。
-      这个替身就叫<b>代理模型（surrogate model）</b>。</p>
-      <p>代价是精度：代理永远有误差。因此设计完还要回到真求解器做一次独立验证——这也是本项目把
-      “代理设计”和“物理直设计”两条路线都实现出来的原因（见 <a href="#method">04 · 方法</a>）。</p>
-    </div>
-
-    <div class="grid-3 rv" style="margin-top:28px">
-      <div class="card">
-        <span class="tag">Paradigm A</span>
-        <h4>串联式 Tandem</h4>
-        <p>训练一个“正向网络”结构→光场，再串一个“逆向网络”光场→结构，用正向网络提供梯度。
-        简单直接，但两个网络的误差会叠加。</p>
+      <div>
+        <h4>指标可复算</h4>
+        <p>评估脚本、训练历史、CSV 都在代码包里。页面上写的每个数字，都能自己跑出同一个。</p>
       </div>
-      <div class="card">
-        <span class="tag">Paradigm B</span>
-        <h4>生成式 GAN / VAE</h4>
-        <p>直接学习“结构分布”，从噪声采样出候选结构。能一次生成多个解，
-        但难以精确命中指定相位，且训练不稳定。</p>
-      </div>
-      <div class="card" style="border-color:#cfc8ba;background:#fff">
-        <span class="tag" style="color:#a4581f">Paradigm C · 本文</span>
-        <h4>Transformer 代理 + 梯度反演</h4>
-        <p>用注意力网络精确拟合物理，再把网络当作可微算子，对每个 patch 直接做梯度下降反演。
-        精度与灵活性兼得，代价是需要一个高质量代理。</p>
-      </div>
-    </div>
-
-    <div class="prose rv" style="margin-top:34px">
-      <h3>1.3 五个绕不过去的工程概念</h3>
-      <p>论文的很多设计选择，本质是在解决下面五个问题。看懂它们，代码就不再神秘。</p>
-    </div>
-
-    <div class="grid-2 rv" style="margin-top:20px">
-      <div class="card numcard">
-        <span class="idx">01</span>
-        <h4>5 µm 分块（patch）</h4>
-        <p>网络只吃 25×25 的输入，1 mm 口径要切成 57121 块。每块独立反演，再拼成整片。
-        块之间必须重叠，否则接缝处相位会跳变。</p>
-      </div>
-      <div class="card numcard">
-        <span class="idx">02</span>
-        <h4>84% 切割比</h4>
-        <p>块的场网格是 100×100 px，但只取中心 84×84 px（4.2 µm）参与拼接，留出 16% 重叠区。
-        拼接时用后一块覆盖前一块，靠重叠保证连续。</p>
-      </div>
-      <div class="card numcard">
-        <span class="idx">03</span>
-        <h4>二值化惩罚</h4>
-        <p>真实加工只有“有材料/没材料”两种状态，但梯度下降偏爱连续值。于是在损失里加
-        <code>(1−n²)</code> 项，随迭代把折射率推向两端，β 从 0 升到 5。</p>
-      </div>
-      <div class="card numcard">
-        <span class="idx">04</span>
-        <h4>可微（differentiable）</h4>
-        <p>只要整条计算链能求导，就能用梯度下降反解。项目里所有物理计算都用 PyTorch 写，
-        而不是 numpy——这是最容易被改坏的地方。</p>
-      </div>
-      <div class="card numcard">
-        <span class="idx">05</span>
-        <h4>相位用 cos 而非差值</h4>
-        <p>相位是周期量：359° 与 1° 只差 2°，直接相减却得到 358°。所以损失写成
-        <code>(1−cos(Δθ))/2</code>，天然对 2π 周期。</p>
-      </div>
-      <div class="card numcard">
-        <span class="idx">06</span>
-        <h4>代理误差的诚实归因</h4>
-        <p>小模型在二值结构上的相位误差可达 0.9–1.6 rad，足以让光斑散掉。
-        判断“是模型不够大还是物理设定错”，要靠物理直设计做对照。</p>
+      <div>
+        <h4>结构统一</h4>
+        <p>所有项目页遵循同一套章节：基础、论文、结果、方法、上手、下载、引用。换一篇论文，阅读路径不变。</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= 02 PAPER ================= -->
-<section id="paper">
+<!-- ================= 02 STANDARD ================= -->
+<section id="standard">
   <div class="wrap">
     <div class="shead rv">
-      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
-      <h2>MetaE-former：用邻域注意力快速设计大尺寸自由曲面超表面</h2>
-      <p>论文要解决的核心矛盾是<b>“大尺寸”与“自由形状”不可兼得</b>：全波仿真精度高但算不动大孔径，
-      查表法速度快但只能做规则结构。它的答案是——训练一个足够准的代理，然后用代理去反演任意形状。</p>
-    </div>
-
-    <div class="card rv" style="padding:26px 26px 22px;margin-bottom:34px">
-      <div class="tag" style="color:#a4581f">PHOTONIX · 2026</div>
-      <h3 style="font-size:20px;margin-bottom:10px">Rapid inverse design of large-scale freeform metaoptics with the neighborhood-attention transformer</h3>
-      <p style="font-size:13.5px;color:#6b7280;line-height:1.8">
-        Kuang et al. · PhotoniX (2026) · 关键词：freeform metaoptics / neighborhood attention /
-        transformer surrogate / inverse design
-      </p>
-      <div class="meta-row" style="margin-top:14px;padding-top:14px">
-        <span>网络：NAT U-Net</span><span>输入 25×25</span><span>输出 100×100 复场</span><span>16 NhA blocks</span>
-      </div>
-    </div>
-
-    <div class="prose rv">
-      <h3>2.1 三个关键设计</h3>
-      <p><b>① 为什么是“邻域”注意力。</b>标准自注意力让每个像素看全图，代价 O(N²)，100×100 就要一亿次交互。
-      但光在柱子之间的耦合本来就是短程的——真正互相影响的只有邻近几根。于是把注意力窗口限制在 5×5，
-      代价降到 O(N·k²)。这不是为了省算力而做的妥协，而是<b>把物理先验写进了网络结构</b>。</p>
-      <p><b>② 为什么是 U 形结构。</b>输入 25×25、输出 100×100，尺寸差 4 倍。编码器逐级下采样提取全局信息
-      （25→13→7），解码器逐级上采样恢复分辨率（7→13→25→50→100），并用跳跃连接把浅层的细节接回来。
-      否则网络只会输出模糊的平均场。</p>
-      <p><b>③ 为什么需要两阶段训练。</b>第一阶段在通用结构上预训练，学会“结构→光场”这个物理映射；
-      第二阶段用<b>自监督数据引擎</b>：先用预训练模型去设计目标任务，把优化过程中每一代的中间结构都存下来，
-      再用真求解器重新标注，最后用差分学习率微调。这样模型见到的就不再是随机噪声，而是“设计过程中真正会出现的结构”。</p>
-    </div>
-
-    <!-- SVG: network -->
-    <figure class="rv">
-      <div class="figbox" style="padding:26px 20px">
-        <svg viewBox="0 0 900 300" style="width:100%;height:auto" role="img" aria-label="MetaE-former 网络结构示意">
-          <defs>
-            <marker id="ar2" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
-              <path d="M0,0 L5.5,3 L0,6 z" fill="#9aa3ab"/>
-            </marker>
-          </defs>
-          <!-- input -->
-          <g>
-            <rect x="24" y="96" width="76" height="76" fill="none" stroke="#16181a" stroke-width="1.2"/>
-            <g fill="#16181a" opacity=".72">
-              <rect x="30" y="102" width="8" height="8"/><rect x="44" y="102" width="8" height="8"/><rect x="58" y="102" width="8" height="8"/><rect x="72" y="102" width="8" height="8"/><rect x="86" y="102" width="8" height="8"/>
-              <rect x="30" y="116" width="8" height="8"/><rect x="58" y="116" width="8" height="8"/><rect x="86" y="116" width="8" height="8"/>
-              <rect x="44" y="130" width="8" height="8"/><rect x="72" y="130" width="8" height="8"/>
-              <rect x="30" y="144" width="8" height="8"/><rect x="58" y="144" width="8" height="8"/><rect x="86" y="144" width="8" height="8"/>
-              <rect x="44" y="158" width="8" height="8"/><rect x="72" y="158" width="8" height="8"/>
-            </g>
-            <text x="24" y="192" font-family="ui-monospace,monospace" font-size="11" fill="#16181a">结构 25×25</text>
-            <text x="24" y="208" font-family="ui-monospace,monospace" font-size="10" fill="#6b7280">n ∈ [1.0, 3.526]</text>
-          </g>
-
-          <line x1="104" y1="134" x2="140" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-
-          <!-- encoder -->
-          <g>
-            <rect x="146" y="96" width="62" height="76" fill="#f4f1ea" stroke="#cfc8ba"/>
-            <text x="177" y="128" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#16181a">25×25</text>
-            <text x="177" y="146" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#6b7280">3×NAB</text>
-
-            <line x1="210" y1="134" x2="242" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-            <rect x="246" y="108" width="52" height="52" fill="#e9e4d8" stroke="#cfc8ba"/>
-            <text x="272" y="130" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#16181a">13×13</text>
-            <text x="272" y="146" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#6b7280">2×NAB</text>
-
-            <line x1="300" y1="134" x2="332" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-            <rect x="336" y="118" width="38" height="32" fill="#ddd6c5" stroke="#cfc8ba"/>
-            <text x="355" y="132" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#16181a">7×7</text>
-            <text x="355" y="145" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#6b7280">2×NAB</text>
-          </g>
-
-          <!-- decoder -->
-          <g>
-            <line x1="376" y1="134" x2="408" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-            <rect x="412" y="108" width="52" height="52" fill="#e9e4d8" stroke="#cfc8ba"/>
-            <text x="438" y="130" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#16181a">13×13</text>
-
-            <line x1="466" y1="134" x2="498" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-            <rect x="502" y="96" width="62" height="76" fill="#f4f1ea" stroke="#cfc8ba"/>
-            <text x="533" y="128" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#16181a">25×25</text>
-
-            <line x1="566" y1="134" x2="598" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-            <rect x="602" y="102" width="72" height="64" fill="#f4f1ea" stroke="#cfc8ba"/>
-            <text x="638" y="132" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#16181a">50×50</text>
-
-            <line x1="676" y1="134" x2="708" y2="134" stroke="#9aa3ab" stroke-width="1" marker-end="url(#ar2)"/>
-            <rect x="712" y="88" width="92" height="92" fill="#f4f1ea" stroke="#cfc8ba"/>
-            <text x="758" y="130" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#16181a">100×100</text>
-            <text x="758" y="146" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#6b7280">2 ch</text>
-          </g>
-
-          <!-- skip connections -->
-          <path d="M177 92 Q177 58 355 58 Q533 58 533 92" fill="none" stroke="#1f4e5f" stroke-width="1" stroke-dasharray="4 4" opacity=".6"/>
-          <path d="M272 104 Q272 76 438 76" fill="none" stroke="#1f4e5f" stroke-width="1" stroke-dasharray="4 4" opacity=".45"/>
-          <text x="356" y="50" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#1f4e5f" opacity=".8">skip connection</text>
-
-          <!-- output label -->
-          <text x="712" y="200" font-family="ui-monospace,monospace" font-size="11" fill="#16181a">复光场 [实部, 虚部]</text>
-          <text x="712" y="216" font-family="ui-monospace,monospace" font-size="10" fill="#6b7280">50 nm / px · 5 µm 窗口</text>
-
-          <!-- NAB detail -->
-          <g transform="translate(24,232)">
-            <rect x="0" y="0" width="852" height="52" fill="#faf9f6" stroke="#e0dbd1"/>
-            <text x="14" y="20" font-family="ui-monospace,monospace" font-size="10" fill="#a4581f">NABlock</text>
-            <text x="14" y="38" font-family="ui-monospace,monospace" font-size="10" fill="#3d4247">LN → 5×5 邻域注意力 → 残差 ‖ LN → MLP → 残差</text>
-            <text x="440" y="20" font-family="ui-monospace,monospace" font-size="10" fill="#a4581f">NhA</text>
-            <text x="440" y="38" font-family="ui-monospace,monospace" font-size="10" fill="#3d4247">每像素只看 5×5 窗口 · O(N·k²) · 含可学习相对位置偏置</text>
-          </g>
-        </svg>
-      </div>
-      <figcaption><b>图 2</b>　MetaE-former 的 U 形拓扑。输入 25×25 折射率，输出 100×100 复光场（实部/虚部双通道）。
-      编码器 25→13→7，解码器 7→13→25→50→100，虚线为跳跃连接。四个上采样倍率中，前两级靠转置卷积回到原分辨率，后两级负责 4× 分辨率提升。</figcaption>
-    </figure>
-
-    <div class="prose rv">
-      <h3>2.2 两阶段训练：从“通用物理”到“任务专属”</h3>
-      <p><b>预训练</b>用四类自由形状超原子（随机斑块 72%、岛状 12%、条纹 16%、任务型）共 26 万样本，
-      损失是幅度 L1 与周期相位项的组合：<code>L = L_amp + α·L_phase</code>。</p>
-      <p><b>微调</b>的关键在“数据从哪来”。论文的做法是自己造：拿预训练模型去反演目标任务，
-      把优化过程中<b>每一代</b>的折射率快照全部存档（而不只是最终结果），再用真求解器标注。
-      为什么用中间快照？因为最终结构分布太窄，中间态才覆盖了设计时的真实分布。</p>
-      <p>微调时还用了<b>差分学习率</b>：上采样层 0.5a、浅层 5a、中层 8a、深层 10a、下采样层 15a。
-      直觉是——浅层学的是通用局部特征，不该大改；下采样层要适应新任务的输入分布，可以大改。</p>
-    </div>
-
-    <div class="tbl-wrap rv">
-      <table>
-        <thead><tr><th>论文要素</th><th>论文做法</th><th>本复现</th></tr></thead>
-        <tbody>
-          <tr><td>真值求解器</td><td>RCWA / FDTD 全波</td><td class="mono">split-step BPM 近似</td></tr>
-          <tr><td>训练数据</td><td>26 万样本，20 epoch</td><td class="mono">流式生成，1600 step ≈ 3.8 万</td></tr>
-          <tr><td>网络规模</td><td>16 块 · embed 256 · 16 heads（≈40 M）</td><td class="mono">7 块 · embed 48 · 4 heads（0.82 M）</td></tr>
-          <tr><td>设计口径</td><td>1 mm · 57121 patches</td><td class="mono">4×4 patches（16.8 µm）</td></tr>
-          <tr><td>运行硬件</td><td>GPU 集群</td><td class="mono">纯 CPU</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 03 RESULTS ================= -->
-<section id="results">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
-      <h2>复现成果：对得上什么，对不上什么</h2>
-      <p>先说结论：<b>方法链路全部跑通，数值精度没有追平论文</b>。下面把两者放在一起，差异逐条标出来。
-      点击任意图片可放大。</p>
-    </div>
-
-    <div class="compare rv">
-      <figure>
-        <div class="lab paper"><span class="sq"></span>论文原图 · Fig.6</div>
-        <div class="figbox"><img src="assets/fig6_paper.jpg" alt="论文 Fig.6 原图" data-lb></div>
-      </figure>
-      <figure>
-        <div class="lab ours"><span class="sq"></span>本复现 · 同版式重制</div>
-        <div class="figbox"><img src="assets/fig6_repro.jpg" alt="本复现的 Fig.6" data-lb></div>
-      </figure>
-    </div>
-    <figcaption class="rv" style="max-width:52em">
-      <b>图 3</b>　Fig.6 对照。三行（Design / Target light field / Real light field）× 四列（Airy-连续、Vortex-连续、Airy-二值、Vortex-二值），
-      比例尺 5 µm / 10 µm / 3 µm 与论文一致。左：论文中目标光斑与实场几乎重合；右：本复现的<b>目标行一致</b>（解析式相同），
-      但<b>实场行明显退化</b>——艾里变成散斑，涡旋环变粗且不均匀。
-    </figcaption>
-
-    <div class="notes rv" style="margin-top:30px">
-      <p><b>差异的根因（诚实归因）</b>：① 代理模型只有 0.82 M 参数（论文约 40 M），二值结构上的相位误差实测 0.9–1.6 rad，
-      接近 π/2，足以让焦斑散掉；② 真值用 BPM 近似而非 FDTD，忽略了反射与多重散射；③ 4×4 小块拼接会累积边界误差。
-      三者叠加，导致实场质量明显低于论文。</p>
-      <p><b>这不是 bug</b>。判断依据见下方指标表：验证集指标落在论文区间内，说明网络学到的物理映射是对的；
-      差距出现在“高精度二值结构”这一最难环节，属于容量与求解器精度问题。</p>
-    </div>
-
-    <div class="prose rv" style="margin-top:44px">
-      <h3>3.1 代理模型精度（Table 1 口径）</h3>
-      <p><code>evaluate.py --ckpt checkpoints/pretrain.pt --n 48</code> 的实测输出，三类自由形状各 48 个样本：</p>
-    </div>
-
-    <div class="tbl-wrap rv">
-      <table>
-        <thead>
-          <tr><th>样本族</th><th class="mono">n</th><th class="mono">幅度 MAE</th><th class="mono">相位 MAE</th><th>论文 FDTD 区间</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>random（随机斑块）</td><td class="mono">48</td><td class="mono">0.123</td><td class="mono">0.171</td><td class="mono">0.037 – 0.114</td></tr>
-          <tr><td>island（岛状）</td><td class="mono">48</td><td class="mono">0.096</td><td class="mono">0.077</td><td class="mono">0.037 – 0.114</td></tr>
-          <tr><td>stripe（条纹）</td><td class="mono">48</td><td class="mono">0.134</td><td class="mono">0.087</td><td class="mono">0.037 – 0.114</td></tr>
-          <tr><td><b>overall</b></td><td class="mono"><b>144</b></td><td class="mono ok">0.118</td><td class="mono ok">0.112</td><td class="mono">0.067 – 0.123（相位）</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="rv" style="font-size:13.5px;color:#6b7280;max-width:46em">
-      幅度误差略高于论文上限，相位误差落在区间内。随机族最差（0.171），因为它的高频成分最多、最难被 0.82 M 的网络拟合。
-    </p>
-
-    <div class="prose rv" style="margin-top:40px">
-      <h3>3.2 训练曲线与逐样本对照</h3>
-    </div>
-
-    <div class="grid-2 rv">
-      <figure>
-        <div class="figbox"><img src="assets/fig3b_training.png" alt="训练曲线" data-lb></div>
-        <figcaption><b>图 4</b>　预训练 1600 step 的损失曲线。1600 步后验证幅度 0.105、相位 0.064，均已收敛但未过拟合。</figcaption>
-      </figure>
-      <figure>
-        <div class="figbox"><img src="assets/fig3c_scatter.png" alt="逐样本散点" data-lb></div>
-        <figcaption><b>图 5</b>　逐样本误差散点。对角线聚集说明无系统性偏差，离群点集中在高频条纹族。</figcaption>
-      </figure>
-    </div>
-
-    <figure class="rv">
-      <div class="figbox"><img src="assets/fig3d_compare.jpg" alt="复场对照" data-lb></div>
-      <figcaption><b>图 6</b>　单样本的复场对照：真值（BPM）与代理预测的实部、虚部、幅度、相位。
-      幅度与相位整体吻合，误差主要集中在柱子边缘的强梯度区域——这正是亚像素平滑与代理容量共同作用的地方。</figcaption>
-    </figure>
-
-    <div class="prose rv" style="margin-top:44px">
-      <h3>3.3 完整软件：桌面 GUI</h3>
-      <p>为了让不懂代码也能用，项目附带一个 PyQt5 图形界面（打包为免安装 exe）。
-      四个标签页覆盖全部链路：训练、相位图逆向设计、场可视化验证、模型评估。</p>
-    </div>
-
-    <div class="grid-2 rv">
-      <figure>
-        <div class="figbox"><img src="assets/gui_design.png" alt="GUI 逆向设计页" data-lb></div>
-        <figcaption><b>图 7</b>　逆向设计页。顶部单选切换「物理直接设计 / 代理模型设计」，
-        任务可选 lens / vortex / airy，也可加载外部相位图（.npy / .csv / .png）。</figcaption>
-      </figure>
-      <figure>
-        <div class="figbox"><img src="assets/gui_viz_xy.png" alt="GUI 场可视化" data-lb></div>
-        <figcaption><b>图 8</b>　场可视化验证页。xy / xz / yz 三种切片 × 强度、实部、虚部、振幅、相位五种物理量，
-        随时切换。这是验收设计结果的主要界面。</figcaption>
-      </figure>
-    </div>
-
-    <figure class="rv">
-      <div class="figbox"><img src="assets/gui_viz_xz.png" alt="xz 传播剖面" data-lb></div>
-      <figcaption><b>图 9</b>　xz 传播剖面。可以看到光从出射面收敛到焦点的全过程，是判断焦距是否设计正确的直接证据。</figcaption>
-    </figure>
-
-    <div class="grid-2 rv" style="margin-top:8px">
-      <figure>
-        <div class="figbox"><img src="assets/design_vortex.jpg" alt="代理设计结果" data-lb></div>
-        <figcaption><b>图 10</b>　代理模型设计的涡旋结果（4×4 patches）。六联图含折射率、输出相位、振幅、焦面光斑、FWHM 剖面、xz 传播。</figcaption>
-      </figure>
-      <figure>
-        <div class="figbox"><img src="assets/design_direct.jpg" alt="物理直设计结果" data-lb></div>
-        <figcaption><b>图 11</b>　物理直设计（全口径可微 BPM，不经代理）的同一任务结果。环更干净，但耗时是代理路线的十倍以上。</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 04 METHOD ================= -->
-<section id="method">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
-      <h2>复现方法：三步替代，与论文逐项对应</h2>
-      <p>本机没有 GPU 集群，也没有 Lumerical。复现的策略是<b>保留全部方法结构，只替换无法获得的部分</b>，
-      并把每一处替换的代价标出来。</p>
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>Standard</div>
+      <h2>一次复现要过四道关</h2>
+      <p>这四件事决定了「复现」和「照着论文画一张图」的区别。走完四关才会归档进上面的列表。</p>
     </div>
 
     <div class="rv">
       <div class="step">
         <div class="num">01</div>
         <div>
-          <h4>用可微 BPM 替代 FDTD</h4>
-          <p>把 800 nm 高的柱子沿 z 切成 8 片，每片交替做「相位累积 <code>exp(i·k₀(n−1)dz)</code>」与
-          「角谱衍射传播」。它保留了强相位累积和柱子间的多切片衍射耦合——也就是让逆向设计变难的那两个因素——
-          但忽略了反射与 z 向多重散射。关键是<b>整条链路可微</b>，所以能直接求梯度。</p>
+          <h4>把物理链路写成可微的</h4>
+          <p>论文的正演往往是不可微的全波求解器。复现时必须换一条<strong>能求梯度的等效链路</strong>，
+          并说清它保留了什么、丢掉了什么。这一步决定后面所有逆向设计能不能做。</p>
         </div>
       </div>
       <div class="step">
         <div class="num">02</div>
         <div>
-          <h4>流式数据替代 26 万样本数据集</h4>
-          <p>采样器每次现场随机生成一批结构（随机斑块 72% / 岛状 12% / 条纹 16%，其中 60% 连续、40% 二值），
-          立刻用 BPM 打标签，用完即弃。省掉了下载与存储，也保证数据分布可以随时调参。</p>
+          <h4>训练能被验证的代理模型</h4>
+          <p>真值数据必须和训练时用同一套物理口径，否则验证集上的低误差是自欺。
+          同时给出一条<strong>基线对比</strong>：随机结构、均值预测，或者原文报告的数字。</p>
         </div>
       </div>
       <div class="step">
         <div class="num">03</div>
         <div>
-          <h4>5 µm patch 并行反演 + 拼接</h4>
-          <p>目标相位按 84% 切割比切成 patch，全部 16 块拼成一个 batch 同时优化（论文 Fig.5 的做法）。
-          每块用 Adam 优化 <code>tanh</code> 参数化的折射率，损失为周期相位项 + β 二值惩罚。
-          最后把结构按 25 px 平铺、场按 100 px 重叠贴回。</p>
+          <h4>逆向结果要放回物理里验</h4>
+          <p>设计出的结构，用<strong>高分辨率前向传播</strong>再算一遍光场，而不是只看代理模型的输出。
+          代理预测漂亮但实场是散斑——这种情况必须写出来。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">04</div>
+        <div>
+          <h4>差异逐条标注</h4>
+          <p>哪些是等价替换、哪些是精度损失、哪些根本没做。用表格列出，并给出这个差距对结论的影响。
+          读者据此判断这份复现能支撑多强的结论。</p>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="prose rv" style="margin-top:44px">
-      <h3>4.1 两条设计路线，各有各的用处</h3>
-      <p>项目实现了两条独立的逆向设计路径。它们<b>不是替代关系，而是互检关系</b>。</p>
+<!-- ================= 03 ROADMAP ================= -->
+<section id="roadmap">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Roadmap</div>
+      <h2>接下来的方向</h2>
+      <p>按「能否拆开验证」排序。做完一篇，就在档案里加一张卡片。</p>
+    </div>
+    <div class="rv" id="roadmap-list"></div>
+  </div>
+</section>
+
+<!-- ================= 04 STACK ================= -->
+<section id="stack">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Stack</div>
+      <h2>共同的底座</h2>
+      <p>所有项目共享同一套基础设施，换一个项目不用重新学怎么跑。</p>
     </div>
 
     <div class="tbl-wrap rv">
       <table>
-        <thead><tr><th></th><th>代理模型设计</th><th>物理直接设计</th></tr></thead>
+        <thead><tr><th>层</th><th>选型</th><th>理由</th></tr></thead>
         <tbody>
-          <tr><td>优化循环里算光场的东西</td><td>神经网络（快，有误差 ≈1 rad）</td><td>真 BPM（准，慢）</td></tr>
-          <tr><td>口径处理</td><td class="mono">5 µm patch 反演后拼接</td><td class="mono">全口径一次反演</td></tr>
-          <tr><td>典型耗时</td><td class="mono">2 – 5 分钟</td><td class="mono">数十分钟</td></tr>
-          <tr><td>拼接误差</td><td class="warn">有</td><td class="ok">无</td></tr>
-          <tr><td>论文对应</td><td>论文正统方法（Fig.5 / Fig.6）</td><td>论文无对应章节，用于替代 FDTD 验证</td></tr>
-          <tr><td>什么时候用</td><td>日常设计、快速迭代</td><td>验收、判断“是模型不够还是物理设定错”</td></tr>
+          <tr><td>数值计算</td><td class="mono">PyTorch / NumPy</td><td>整条光学链路可微，梯度直接反传到结构参数</td></tr>
+          <tr><td>传播算子</td><td class="mono">split-step BPM + 角谱</td><td>保留强相位累积与多切片耦合，比全波快几个量级</td></tr>
+          <tr><td>代理模型</td><td class="mono">Transformer / U-Net</td><td>按论文结构实现，规模可配置</td></tr>
+          <tr><td>交付形态</td><td class="mono">CLI + 桌面 GUI</td><td>命令行便于批量复算，GUI 便于不改代码的人上手</td></tr>
+          <tr><td>许可</td><td class="mono">MIT</td><td>代码可自由取用；论文插图版权归原作者</td></tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="prose rv" style="margin-top:26px">
-      <p><b>怎么用这条互检：</b>对同一目标分别跑两条路线。如果直设计光斑干净、代理设计散乱，
-      问题在代理（该加大模型）；如果两者都散，问题在目标相位或传播参数（该改物理设定）。
-      这个归因能力，比任何单条路线的结果都更有价值。</p>
-      <p>GUI 里这两条路线就是「相位图逆向设计」页顶部的两个单选项，切换后参数面板会自动适配。</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 05 QUICK START ================= -->
-<section id="start">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
-      <h2>四步上手，免训练即可出图</h2>
-      <p>代码包已含三个预训练权重（约 10 MB），<b>不需要重新训练</b>就能直接设计。
-      全新环境只需装 torch / numpy / scipy / matplotlib。</p>
-    </div>
-
-    <div class="codeblock rv">
-      <div class="codehead"><span>bash · metae-former</span><button class="copybtn" data-copy="#qstart">复制全部</button></div>
-<pre id="qstart"><span class="c"># 1. 取代码并进入目录</span>
-git clone https://github.com/Alice-P197/metae-former.git
-cd metae-former
-
-<span class="c"># 2. 装依赖（CPU 版 torch，无需 CUDA）</span>
-pip install -r requirements.txt
-
-<span class="c"># 3. 确认权重可用：三族样本的代理精度（约 26 秒）</span>
-python evaluate.py --ckpt checkpoints/pretrain.pt --n 48
-
-<span class="c"># 4. 做一次涡旋光逆向设计，产物落在 outputs/vortex6/</span>
-python design.py --task vortex --l 6 --ckpt checkpoints/finetune2.pt --out outputs/vortex6</pre>
-    </div>
-
-    <div class="prose rv" style="margin-top:26px">
-      <h3>5.1 四条常用命令</h3>
-    </div>
-
-    <div class="codeblock rv">
-      <div class="codehead"><span>bash · 任务示例</span><button class="copybtn" data-copy="#tasks">复制全部</button></div>
-<pre id="tasks"><span class="c"># 金属透镜：焦距 20 µm，环境折射率 1.0</span>
-python design.py --task metalens --focal 20e-6 --n-bg 1.0 --out outputs/metalens
-
-<span class="c"># 高阶涡旋：拓扑荷 l=6</span>
-python design.py --task vortex --l 6 --out outputs/vortex6
-
-<span class="c"># 艾里光束：立方相位强度 S 越大，主瓣越窄</span>
-python design.py --task airy --strength 10.0 --out outputs/airy
-
-<span class="c"># 任意目标：传入自己的相位图（尺寸 = (patches-1)*84+100）</span>
-python design.py --task custom --phase my_phase.npy --out outputs/custom
-
-<span class="c"># 物理直接设计（不经代理，慢但准）</span>
-python direct_design.py outputs/direct_vortex6 vortex 6 --iters 2500</pre>
-    </div>
-
-    <div class="prose rv" style="margin-top:26px">
-      <h3>5.2 输出里有什么</h3>
-      <div class="grid-3" style="margin-top:16px">
-        <div class="card"><span class="tag">PNG</span><h4>design_result.png</h4>
-          <p>六联图：折射率分布、输出相位、输出振幅、焦面光斑、FWHM 剖面、x-z 传播。</p></div>
-        <div class="card"><span class="tag">NPZ</span><h4>design.npz</h4>
-          <p>全部原始数组：<code>ri</code> / <code>field</code> / <code>focal_int</code> / <code>xz</code> / <code>meta</code>，可直接二次分析。</p></div>
-        <div class="card"><span class="tag">JSON</span><h4>summary.json</h4>
-          <p>NA、FWHM（x/y）、衍射极限、3×FWHM 效率、优化耗时、单 patch 迭代耗时。</p></div>
-      </div>
-    </div>
-
-    <div class="prose rv" style="margin-top:34px">
-      <h3>5.3 零基础怎么读代码</h3>
-      <p>附带的 <a href="https://github.com/Alice-P197/metae-former/blob/main/TUTORIAL.md" target="_blank" rel="noopener">TUTORIAL.md</a>
-      是写给“完全没接触过深度学习”的读者的，约 970 行，含张量、训练循环、代理模型、可微性等全部前置概念。
-      推荐按下面的顺序读，每一步都能立刻看到输出：</p>
-    </div>
-
-    <div class="tbl-wrap rv">
-      <table>
-        <thead><tr><th>顺序</th><th>文件</th><th>读它解决什么问题</th></tr></thead>
-        <tbody>
-          <tr><td class="mono">1</td><td class="mono">metae/tasks.py</td><td>目标相位长什么样——先画出来看，再谈设计</td></tr>
-          <tr><td class="mono">2</td><td class="mono">metae/solver.py</td><td>物理怎么算的，输入输出各是什么形状</td></tr>
-          <tr><td class="mono">3</td><td class="mono">metae/data.py</td><td>训练数据从哪来，四类结构怎么采样</td></tr>
-          <tr><td class="mono">4</td><td class="mono">metae/model.py</td><td>网络怎么搭的，邻域注意力实现细节</td></tr>
-          <tr><td class="mono">5</td><td class="mono">pretrain.py</td><td>把上面四块拼成训练循环（20 行的骨架）</td></tr>
-          <tr><td class="mono">6</td><td class="mono">design.py</td><td>把训练好的模型当工具用，论文 Eq.4–7 的落地</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 06 DOWNLOAD ================= -->
-<section id="download">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
-      <h2>资源下载</h2>
-      <p>压缩包内含全部源码、三个预训练权重、关键结果图与教程文档。解压后按教程第 0 章即可跑通，
-      无需重新训练。</p>
-    </div>
-
-    <div class="dl-grid rv">
-      <div class="dl-card primary">
-        <div class="ver">LATEST RELEASE · v1.0.0 · 2026-11-02</div>
-        <h3>MetaE-former 完整代码包</h3>
-        <div class="sub">PhotoniX 2026 · 纯 CPU 复现 · 含预训练权重</div>
-        <ul class="checklist">
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>完整源码：<code>metae/</code> 库 + 7 个入口脚本</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>预训练权重 <code>pretrain.pt</code> / <code>finetune.pt</code> / <code>finetune2.pt</code></li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>零基础教程 <code>TUTORIAL.md</code>（约 970 行）</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>复现结果图：Fig.3 / Fig.6 / GUI 截图</li>
-          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>训练历史与评估 CSV，可复算全部指标</li>
-        </ul>
-        <div class="dl-actions">
-          <a class="btn btn-primary" href="https://github.com/Alice-P197/metae-former/releases/latest/download/metae-former-v1.0.0.zip">
-            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>下载 ZIP
-          </a>
-          <button class="copybtn" style="padding:9px 14px;font-size:12px"
-            data-copy-text="https://github.com/Alice-P197/metae-former/releases/latest/download/metae-former-v1.0.0.zip">复制直链</button>
-        </div>
-        <div class="meta-row">
-          <span>v1.0.0</span><span>≈ 12 MB</span><span>MIT</span><span>2026-11-02</span>
-        </div>
-      </div>
-
-      <div class="dl-card">
-        <div class="ver">GIT CLONE · 源码仓库</div>
-        <h3>只取源码</h3>
-        <div class="sub">想直接读代码、提 issue 或改任务，走这条路</div>
-        <div class="pathline" style="margin-bottom:14px">git clone https://github.com/Alice-P197/metae-former.git</div>
-        <div class="dl-actions">
-          <a class="btn btn-ghost" href="https://github.com/Alice-P197/metae-former" target="_blank" rel="noopener">打开仓库</a>
-          <button class="copybtn" style="padding:9px 14px;font-size:12px"
-            data-copy-text="git clone https://github.com/Alice-P197/metae-former.git">复制命令</button>
-        </div>
-        <div class="meta-row"><span>≈ 14 MB</span><span>main</span><span>含 .gitignore</span></div>
-      </div>
-    </div>
-
-    <div class="grid-3 rv" style="margin-top:20px">
-      <div class="card">
-        <span class="tag">Docs</span>
-        <h4>零基础教程</h4>
-        <p>从张量、训练循环讲到 patch 拼接与排错手册。建议第一次接触深度学习的人先读它。</p>
-        <p style="margin-top:10px"><a href="https://github.com/Alice-P197/metae-former/blob/main/TUTORIAL.md" target="_blank" rel="noopener">在线阅读 →</a></p>
-      </div>
-      <div class="card">
-        <span class="tag">Paper</span>
-        <h4>原始论文</h4>
-        <p>Kuang et al., <i>Rapid inverse design of large-scale freeform metaoptics with the neighborhood-attention transformer</i>, PhotoniX (2026).</p>
-      </div>
-      <div class="card">
-        <span class="tag">License</span>
-        <h4>MIT · 自由使用</h4>
-        <p>代码可自由修改与再分发。论文图片版权归原作者与期刊所有，本页仅作复现对照之用。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 07 CITATION ================= -->
-<section id="cite">
-  <div class="wrap">
-    <div class="shead rv">
-      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
-      <h2>引用与声明</h2>
-    </div>
-
-    <div class="rv">
-      <p style="font-size:14px;color:#3d4247;margin-bottom:6px">如果你在研究中用到了本复现的代码或权重：</p>
-      <div class="bibtex">
-        <button class="copybtn" data-copy="#bibtex">复制</button>
-<pre id="bibtex">@article{kuang2026metae,
-  title   = {Rapid inverse design of large-scale freeform metaoptics
-             with the neighborhood-attention transformer},
-  author  = {Kuang, and others},
-  journal = {PhotoniX},
-  year    = {2026}
-}</pre>
-      </div>
-
-      <div class="notes">
-        <p><b>复现声明。</b>本页是第三方复现，非论文作者官方代码。真值场由 split-step BPM 生成而非 RCWA/FDTD，
-        网络规模为论文的约 1/49，设计口径为 4×4 patches 而非 1 mm。
-        因此<b>绝对数值不可与论文对标</b>，只保证方法链路（数据生成 → 预训练 → 自监督微调 → patch 拼接反演 → 验证）完整可运行。</p>
-        <p><b>结果差距已如实展示。</b>Fig.6 的实场行明显退化，原因在第 03 节逐条列出，未做美化或裁剪。
-        如果你需要论文级精度，路线是换 <code>--preset paper</code> 并用真实 FDTD 重新标注数据。</p>
-        <p><b>图片版权。</b>「论文原图」标注的图片版权归原作者与 PhotoniX 所有，此处仅用于复现结果的学术对照，
-        不作商业使用。</p>
-        <p><b>代码许可。</b>MIT。欢迎提 issue 或 PR，尤其是关于提高二值结构预测精度的思路。</p>
-      </div>
     </div>
   </div>
 </section>
@@ -1114,13 +204,14 @@ python direct_design.py outputs/direct_vortex6 vortex 6 --iters 2500</pre>
 <footer>
   <div class="wrap foot-in">
     <div class="foot-brand">
-      MetaE-former 复现
-      <span>Built for reproducibility</span>
+      论文复现实验室
+      <span>Paper Repro Lab</span>
     </div>
     <div class="foot-links">
-      <a href="https://github.com/Alice-P197/metae-former" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/Alice-P197/metae-former/blob/main/TUTORIAL.md" target="_blank" rel="noopener">教程</a>
-      <a href="https://alice-p197.github.io/paper-repro-lab/" target="_blank" rel="noopener">论文复现实验室</a>
+      <a href="index.html#archive">档案</a>
+      <a href="guide.html">方法</a>
+      <a href="reproductions/_template.html">模板</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
       <a href="#top">回到顶部</a>
     </div>
   </div>
@@ -1129,124 +220,7 @@ python direct_design.py outputs/direct_vortex6 vortex 6 --iters 2500</pre>
 <div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
 <div class="toast" id="toast">已复制</div>
 
-<script>
-(function(){
-  "use strict";
-
-  /* ---------- toast ---------- */
-  var toast = document.getElementById('toast'), tTimer;
-  function showToast(msg){
-    toast.textContent = msg || '已复制';
-    toast.classList.add('on');
-    clearTimeout(tTimer);
-    tTimer = setTimeout(function(){ toast.classList.remove('on'); }, 1700);
-  }
-
-  /* ---------- copy buttons ---------- */
-  function copyText(text, cb){
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(function(){ cb(true); }, function(){ fallback(text, cb); });
-    } else { fallback(text, cb); }
-  }
-  function fallback(text, cb){
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); cb(true); } catch(e){ cb(false); }
-    document.body.removeChild(ta);
-  }
-
-  document.querySelectorAll('[data-copy],[data-copy-text]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var text = btn.getAttribute('data-copy-text');
-      if (!text){
-        var sel = btn.getAttribute('data-copy');
-        var el = document.querySelector(sel);
-        text = el ? el.innerText : '';
-      }
-      copyText(text, function(ok){
-        var old = btn.textContent;
-        btn.textContent = ok ? '已复制' : '复制失败';
-        showToast(ok ? '已复制到剪贴板' : '复制失败，请手动选择');
-        setTimeout(function(){ btn.textContent = old; }, 1600);
-      });
-    });
-  });
-
-  /* ---------- lightbox ---------- */
-  var lb = document.getElementById('lb'), lbimg = document.getElementById('lbimg');
-  document.querySelectorAll('img[data-lb]').forEach(function(img){
-    img.addEventListener('click', function(){
-      lbimg.src = img.src;
-      lbimg.alt = img.alt || '';
-      lb.classList.add('on');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-  function closeLb(){
-    lb.classList.remove('on');
-    lbimg.src = '';
-    document.body.style.overflow = '';
-  }
-  lb.addEventListener('click', closeLb);
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && lb.classList.contains('on')) closeLb();
-  });
-
-  /* ---------- scroll reveal ---------- */
-  var items = document.querySelectorAll('.rv');
-  if ('IntersectionObserver' in window){
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    items.forEach(function(el){ io.observe(el); });
-  } else {
-    items.forEach(function(el){ el.classList.add('in'); });
-  }
-
-  /* ---------- nav active ---------- */
-  var secs = Array.prototype.slice.call(document.querySelectorAll('section[id]'));
-  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
-  function syncNav(){
-    var y = window.scrollY + 120, cur = '';
-    secs.forEach(function(s){ if (s.offsetTop <= y) cur = s.id; });
-    links.forEach(function(a){
-      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
-    });
-  }
-  window.addEventListener('scroll', syncNav, { passive: true });
-  syncNav();
-
-  /* ---------- count up ---------- */
-  function animateCount(el){
-    var target = parseFloat(el.getAttribute('data-count'));
-    var dec = parseInt(el.getAttribute('data-dec') || '0', 10);
-    var suffix = el.getAttribute('data-suffix') || '';
-    var dur = 900, t0 = null;
-    function frame(ts){
-      if (!t0) t0 = ts;
-      var p = Math.min((ts - t0) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      var v = target * eased;
-      el.textContent = (dec > 0 ? v.toFixed(dec) : Math.round(v).toLocaleString()) + suffix;
-      if (p < 1) requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
-  var statEls = document.querySelectorAll('.stat .n');
-  if ('IntersectionObserver' in window && statEls.length){
-    var io2 = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if (en.isIntersecting){ animateCount(en.target); io2.unobserve(en.target); }
-      });
-    }, { threshold: 0.4 });
-    statEls.forEach(function(el){ io2.observe(el); });
-  } else {
-    statEls.forEach(animateCount);
-  }
-})();
-</script>
+<script src="assets/data/projects.js"></script>
+<script src="assets/js/site.js"></script>
 </body>
 </html>

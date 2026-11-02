@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     项目页模板
+     用法：复制本文件为 reproductions/<slug>.html，然后
+       1. 改 <title>、description、面包屑、hero 文案
+       2. 按需保留或删除章节（编号要连续）
+       3. 替换图片路径为 ../assets/img/<slug>/
+       4. 在 ../assets/data/projects.js 里加一条记录
+       5. 和相邻页面互相挂上「上一篇 / 下一篇」
+     不要改动：nav、anchorbar、footer、lb、script 引用。
+     ============================================================ -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>论文标题 · 一句话总结 | 论文复现</title>
+<meta name="description" content="在这里写 120 字以内的摘要：复现了哪篇论文的哪部分，交付了什么，结论是什么。">
+<meta property="og:title" content="论文标题 · 一句话总结">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="cn">论文复现实验室</span>
+      <span class="en">Paper Repro Lab</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#archive">档案</a>
+      <a href="../guide.html">方法</a>
+      <a href="_template.html">模板</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="in">
+    <a href="../index.html">档案</a>
+    <span class="sep">/</span>
+    <span class="cur">论文短名</span>
+    <span class="sep">·</span>
+    <span>期刊 年份</span>
+  </div>
+</div>
+
+<div class="anchorbar">
+  <div class="in">
+    <a href="#fundamentals">基础</a>
+    <a href="#paper">论文</a>
+    <a href="#results">结果</a>
+    <a href="#method">方法</a>
+    <a href="#start">上手</a>
+    <a href="#download">下载</a>
+    <a href="#cite">引用</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      期刊 · 年份 · 项目编号
+    </div>
+    <h1>一句主标题<br>把核心动作<em>斜体强调</em></h1>
+    <p class="lede">
+      两三句话：这篇论文解决什么问题、用什么办法、你复现到了哪一步、交付了什么。
+      <strong>加粗关键名词</strong>，不要加形容词。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#results">查看结果</a>
+      <a class="btn btn-ghost" href="#download">下载代码</a>
+    </div>
+    <div class="chips">
+      <span class="chip">框架版本</span>
+      <span class="chip">关键依赖</span>
+      <span class="chip">MIT License</span>
+      <span class="chip">更新于 YYYY-MM-DD</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="n" data-count="0.0082" data-dec="4">0</div>
+        <div class="k">指标名<br>口径说明</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="10">0</div>
+        <div class="k">指标名<br>口径说明</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="50">0</div>
+        <div class="k">指标名<br>口径说明</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="2">0</div>
+        <div class="k">指标名<br>口径说明</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 01 FUNDAMENTALS ================= -->
+<section id="fundamentals">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
+      <h2>读懂这篇论文需要的前置概念</h2>
+      <p>面向没接触过这个方向的读者，用三段话说清：它是什么、为什么值得做、代价是什么。</p>
+    </div>
+
+    <div class="prose rv">
+      <p>第一段：<b>定义</b>。它不是什么、是什么。</p>
+      <p>第二段：<b>动机</b>。相比已有做法，它换掉了哪个环节。</p>
+      <p>第三段：<b>约束</b>。物理或工程上绕不开的限制，通常正好是复现的难点。</p>
+    </div>
+
+    <div class="band rv">
+      <div><h4>环节一</h4><p>一句话说明。</p></div>
+      <div><h4>环节二</h4><p>一句话说明。</p></div>
+      <div><h4>环节三</h4><p>一句话说明。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
+      <h2>论文的核心链路</h2>
+      <p>用一张表把关键参数列清楚：每一行对应原文的一个公式或一个器件参数。</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>环节</th><th>参数</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>输入</td><td class="mono">尺寸 / 单位</td><td>说明</td></tr>
+          <tr><td>变换</td><td class="mono">公式编号</td><td>说明</td></tr>
+          <tr><td>输出</td><td class="mono">尺寸 / 单位</td><td>说明</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
+      <h2>复现结果</h2>
+      <p>和原文并排，或者至少说明这张图是什么条件下得到的。</p>
+    </div>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>论文原图</div>
+        <div class="figbox"><img src="../assets/img/&lt;slug&gt;/paper.jpg" alt="论文原图" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>本复现</div>
+        <div class="figbox"><img src="../assets/img/&lt;slug&gt;/ours.jpg" alt="复现结果" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 1</b>　说明这张图的来源、条件、单位与比例尺。论文图与复现图必须分清。
+    </figcaption>
+  </div>
+</section>
+
+<!-- ================= 04 METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
+      <h2>复现方法</h2>
+      <p>分步写清替换了什么，以及替换的代价。</p>
+    </div>
+
+    <div class="rv">
+      <div class="step">
+        <div class="num">01</div>
+        <div><h4>第一步</h4><p>做了什么，为什么这样做。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div><h4>第二步</h4><p>做了什么，为什么这样做。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div><h4>第三步</h4><p>做了什么，为什么这样做。</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px">与论文的差异</h3>
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>项目</th><th>论文</th><th>本复现</th><th>影响</th></tr></thead>
+        <tbody>
+          <tr><td>求解器</td><td>论文做法</td><td class="mono">本复现做法</td><td>对结论的影响方向</td></tr>
+          <tr><td>训练配置</td><td>论文做法</td><td class="mono">本复现做法</td><td>影响</td></tr>
+          <tr><td>未完成项</td><td>已实现</td><td class="warn">未复现</td><td>原因与后果</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 START ================= -->
+<section id="start">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
+      <h2>跑起来</h2>
+      <p>环境要求 + 三条命令，能直接复制执行。</p>
+    </div>
+
+    <div class="codeblock rv">
+      <div class="codehead"><span>terminal</span>
+        <button class="copybtn" data-copy="#cmd">复制命令</button></div>
+      <pre id="cmd"><span class="c"># 1. 装依赖</span>
+pip install -r requirements.txt
+
+<span class="c"># 2. 跑一遍</span>
+python main.py --config configs/default.yaml
+
+<span class="c"># 3. 出图</span>
+python plot.py --out outputs/</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
+      <h2>资源下载</h2>
+    </div>
+
+    <div class="dl-grid rv">
+      <div class="dl-card primary">
+        <div class="ver">RELEASE · v1.0.0</div>
+        <h3>代码包</h3>
+        <div class="sub">源码 + 权重 + 结果图</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>源码</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>预训练权重</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="#">
+            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>下载
+          </a>
+        </div>
+        <div class="meta-row"><span>v1.0.0</span><span>大小</span><span>MIT</span></div>
+      </div>
+      <div class="dl-card">
+        <div class="ver">SOURCE</div>
+        <h3>源码目录</h3>
+        <div class="sub">可以直接 clone</div>
+        <div class="pathline">reproductions/&lt;slug&gt;/</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 CITE ================= -->
+<section id="cite">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
+      <h2>引用与声明</h2>
+    </div>
+
+    <div class="bibtex rv">
+      <button class="copybtn" data-copy="#bib">复制</button>
+      <pre id="bib">@article{key,
+  title   = {},
+  author  = {},
+  journal = {},
+  year    = {}
+}</pre>
+    </div>
+
+    <div class="notes rv">
+      <p>代码许可、插图版权、以及「这是独立复现，非官方实现」的声明。</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="#" title="改成相邻页面">
+      <div class="dir">← 上一篇</div>
+      <div class="tt">标题</div>
+    </a>
+    <a class="next" href="#" title="改成相邻页面">
+      <div class="dir">下一篇 →</div>
+      <div class="tt">标题</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      论文复现实验室
+      <span>Paper Repro Lab</span>
+    </div>
+    <div class="foot-links">
+      <a href="../index.html#archive">全部档案</a>
+      <a href="../guide.html">复现方法</a>
+      <a href="_template.html">页面模板</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
+<div class="toast" id="toast">已复制</div>
+
+<script src="../assets/js/site.js"></script>
+</body>
+</html>
