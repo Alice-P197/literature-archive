@@ -21,7 +21,7 @@ docs/
 │   └── img/
 │       ├── metae/                 项目 01 的图
 │       └── optgen/                项目 02 的图
-└── downloads/                     报告 PDF、代码包等可直接下载的文件
+└── downloads/                     代码包与 GUI 分卷（.001/.002/.003）
 ```
 
 | 文件 | 要点 |
@@ -64,7 +64,7 @@ docs/
 | 项 | 检查内容 |
 |---|---|
 | 结构 | 章节编号连续、锚点条链接全部有效、面包屑路径正确 |
-| 资源 | 所有 `img` 路径存在；图片无空白占位；PDF 与 ZIP 链接可下载 |
+| 资源 | 所有 `img` 路径存在；图片无空白占位；各 ZIP 与分卷链接可下载 |
 | 交互 | 灯箱可开可关（Esc 生效）、复制按钮有反馈、导航当前页高亮 |
 | 数据 | `projects.js` 里的 href 与文件名一致；新增卡片出现在首页 |
 | 窄屏 | 900 px 以下卡片单列、截图单列、参数表可横向滚动 |
@@ -80,4 +80,33 @@ python _check_site.py
 
 ## 代码包
 
-`docs/downloads/metae-former-v1.0.0.zip` 是站点上可下载的代码包，由仓库根目录的源码打包而成，排除 `docs/`、`.git`、`__pycache__`、`reproductions/`、`outputs/` 与本文档。改动源码后需要重新打包并提交。
+`docs/downloads/` 下三个交付物，改动源码后都要重新打包并提交：
+
+| 文件 | 来源 | 说明 |
+|---|---|---|
+| `metae-former-v1.0.0.zip` | 仓库根目录 | 排除 `docs/`、`.git`、`__pycache__`、`reproductions/`、`outputs/` 与本文档 |
+| `optical-generative-models-v1.0.0.zip` | `reproductions/optical-generative-models/` | MATLAB 源码 + 原型权重 + 日志 |
+| `metae-gui-windows-x64-v1.0.0.zip.001~003` | PyInstaller 产物目录 | 见下 |
+
+### GUI 免安装包
+
+体积约 215 MB（PyTorch 的 `torch_cpu.dll` 一个就占 254 MB，压缩后 76 MB），超过 GitHub 单文件 100 MB 限制，所以按 75 MB 切三卷。
+
+生成流程：
+
+```bash
+pyinstaller MetaEFormerGUI.spec        # 产物在 dist/MetaEFormerGUI/
+# 把 checkpoints/finetune2.pt 复制进 _internal/checkpoints/（spec 里只声明了两个权重）
+./MetaEFormerGUI.exe --selftest        # 必须跑，确认打包没有漏模块
+rm -rf MetaEFormerGUI/outputs MetaEFormerGUI/checkpoints   # 清掉自检产物
+# 压缩该目录，再按 75 MB 切片，输出到 docs/downloads/
+```
+
+切片后必须验证：合并三卷 → `zipfile.testzip()` 返回 `None`，且 `_internal/checkpoints/` 下三个权重齐全。
+
+Windows 合并命令（页面上也给了）：
+
+```bat
+copy /b metae-gui-windows-x64-v1.0.0.zip.001 + metae-gui-windows-x64-v1.0.0.zip.002 + metae-gui-windows-x64-v1.0.0.zip.003 metae-gui.zip
+```
+

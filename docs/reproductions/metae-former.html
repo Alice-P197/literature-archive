@@ -21,6 +21,7 @@
     </a>
     <div class="nav-links">
       <a href="../index.html#archive" class="active">档案</a>
+      <a href="#download">下载</a>
       <a href="../guide.html">方法</a>
       <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -591,6 +592,9 @@ pyinstaller MetaEFormerGUI.spec</pre>
     <div class="notes rv" style="margin-top:22px">
       <p>界面用 tkinter 写成，不依赖 Qt 或浏览器内核，因此打包后的体积主要由 PyTorch 决定。
       如果你的环境里已经能跑命令行版本，GUI 直接就能开，不需要再配一套依赖。</p>
+      <p><b>不想装环境？</b>已经打包好一份 Windows 免安装版本，内嵌 Python 运行时与三个权重，
+      解压后双击 <code>MetaEFormerGUI.exe</code> 即可。
+      <a href="#download">到下载区取（3 个分卷）→</a></p>
     </div>
   </div>
 </section>
@@ -750,8 +754,9 @@ python direct_design.py outputs/direct_vortex6 vortex 6 --iters 2500</pre>
     <div class="shead rv">
       <div class="kicker"><span class="num">07</span><span class="bar"></span>Download</div>
       <h2>资源下载</h2>
-      <p>压缩包内含全部源码、三个预训练权重、关键结果图与教程文档。解压后按教程第 0 章即可跑通，
-      无需重新训练。</p>
+      <p>两样东西：<b>源码包</b>（8.9 MB，含全部源码、三个预训练权重、结果图与教程，解压即可跑）；
+      <b>桌面程序</b>（215 MB，Windows x64 免安装，内嵌运行时与权重，双击就用）。
+      两者都不需要重新训练。</p>
     </div>
 
     <div class="dl-grid rv">
@@ -779,16 +784,40 @@ python direct_design.py outputs/direct_vortex6 vortex 6 --iters 2500</pre>
       </div>
 
       <div class="dl-card">
-        <div class="ver">GIT CLONE · 源码仓库</div>
-        <h3>只取源码</h3>
-        <div class="sub">想直接读代码、提 issue 或改任务，走这条路</div>
-        <div class="pathline" style="margin-bottom:14px">git clone https://github.com/Alice-P197/paper-repro-lab.git</div>
-        <div class="dl-actions">
-          <a class="btn btn-ghost" href="https://github.com/Alice-P197/paper-repro-lab" target="_blank" rel="noopener">打开仓库</a>
-          <button class="copybtn" style="padding:9px 14px;font-size:12px"
-            data-copy-text="git clone https://github.com/Alice-P197/paper-repro-lab.git">复制命令</button>
+        <div class="ver">WINDOWS · x64 · v1.0.0</div>
+        <h3>桌面程序（免安装）</h3>
+        <div class="sub">PyInstaller 打包，内含 Python 运行时与全部三个权重，目标机器不需要装任何环境</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>双击 <code>MetaEFormerGUI.exe</code> 即用，四个标签页全部可用</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>已内置 <code>pretrain.pt</code> / <code>finetune.pt</code> / <code>finetune2.pt</code></li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>训练、逆向设计、场可视化、评估四条链路开箱可用</li>
+        </ul>
+        <div style="font-family:var(--mono);font-size:12px;line-height:2;margin-bottom:14px">
+          <a href="../downloads/metae-gui-windows-x64-v1.0.0.zip.001">…zip.001</a>　75 MB<br>
+          <a href="../downloads/metae-gui-windows-x64-v1.0.0.zip.002">…zip.002</a>　75 MB<br>
+          <a href="../downloads/metae-gui-windows-x64-v1.0.0.zip.003">…zip.003</a>　65 MB
         </div>
-        <div class="meta-row"><span>≈ 14 MB</span><span>main</span><span>含 .gitignore</span></div>
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:8px">
+          三个分卷下载后需先合并，再解压：
+        </div>
+        <div class="pathline" style="margin-bottom:10px">copy /b metae-gui-windows-x64-v1.0.0.zip.001 + metae-gui-windows-x64-v1.0.0.zip.002 + metae-gui-windows-x64-v1.0.0.zip.003 metae-gui.zip</div>
+        <div class="dl-actions">
+          <button class="copybtn" style="padding:9px 14px;font-size:12px"
+            data-copy-text="copy /b metae-gui-windows-x64-v1.0.0.zip.001 + metae-gui-windows-x64-v1.0.0.zip.002 + metae-gui-windows-x64-v1.0.0.zip.003 metae-gui.zip">复制合并命令</button>
+        </div>
+        <div class="meta-row"><span>215 MB</span><span>3 卷</span><span>Windows 10/11</span><span>解压即用</span></div>
+      </div>
+    </div>
+
+    <div class="dl-card rv" style="margin-top:18px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div>
+        <div class="ver" style="margin-bottom:6px">GIT CLONE · 源码仓库</div>
+        <div style="font-size:14px;color:var(--ink-2)">想直接读代码、提 issue 或改任务，克隆整个仓库（含两个复现的源码与站点本身）。</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div class="pathline" style="font-size:11px">git clone https://github.com/Alice-P197/paper-repro-lab.git</div>
+        <button class="copybtn" style="padding:9px 14px;font-size:12px"
+          data-copy-text="git clone https://github.com/Alice-P197/paper-repro-lab.git">复制命令</button>
       </div>
     </div>
 

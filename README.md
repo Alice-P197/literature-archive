@@ -14,7 +14,7 @@
 | # | 论文 | 方向 | 交付 |
 |---|---|---|---|
 | 01 | **MetaE-former**：用邻域注意力代理模型设计大尺寸超表面<br>PhotoniX 2026 | 神经网络 + 逆向设计 | Python 源码、3 个预训练权重、Fig.3 / Fig.6 复现图、桌面端 GUI、零基础教程 |
-| 02 | **Optical generative models**：让光在自由空间里完成一次生成<br>Nature 644, 903–911 (2025) | 光学计算 + 生成模型 | MATLAB 源码（11 个脚本）、两套原型权重、复现报告 |
+| 02 | **Optical generative models**：让光在自由空间里完成一次生成<br>Nature 644, 903–911 (2025) | 光学计算 + 生成模型 | MATLAB 源码（15 个脚本）、两套原型权重、四组实验日志 |
 
 ---
 
@@ -33,7 +33,7 @@
 │   │   ├── js/site.js                 唯一脚本
 │   │   ├── data/projects.js           项目清单（新增一篇改这里）
 │   │   └── img/{metae,optgen}/
-│   └── downloads/                     代码包与报告 PDF
+│   └── downloads/                     代码包与 GUI 分卷
 │
 ├── metae/                             MetaE-former 的核心库
 ├── pretrain.py  finetune.py  design.py  evaluate.py
