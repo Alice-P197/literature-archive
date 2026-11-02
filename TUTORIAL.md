@@ -5,7 +5,7 @@
 >
 > 对应论文：Kuang et al., *Rapid inverse design of large-scale freeform metaoptics with the neighborhood-attention transformer*, PhotoniX 2026。
 >
-> 本仓库是**纯 CPU 复现**，不是论文官方代码。所有与论文的差异在第 2.4 节集中列出，务必先读，否则你会把"复现精度差距"误判成"代码 bug"。
+> 本仓库是**独立复现**，不是论文官方代码。所有与论文的差异在第 2.4 节集中列出，务必先读，否则你会把"复现精度差距"误判成"代码 bug"。
 
 ---
 
@@ -314,7 +314,7 @@ valid = n_p * CROP                     # 有效口径 = n_p * 84
 | `evaluate.py` | 三类样本指标评估 | 确认权重质量 |
 | `design.py` | **主设计入口**（论文 Eq.4-7） | 日常出结果 ⭐ |
 | `generate.py` | 设计 + 一键出图（GUI 后端也用） | 出交付图 |
-| `gui_app.py` | PyQt5 图形界面（含 `--selftest`） | 不想敲命令 |
+| `gui_app.py` | tkinter 图形界面（含 `--selftest`） | 不想敲命令 |
 | `direct_design.py` | **物理直接设计**（全口径可微 BPM，走代理） | 追求精度、能等几十分钟 ⭐ |
 | `design_fig6.py` / `make_fig6.py` | 复现论文 Fig.6 的批量设计与出图 | 写论文/汇报 |
 | `refine_display.py` | 对已存结构做高分辨前向验证（50nm 全网格 + 角谱） | 怀疑代理模型骗你时 |
@@ -870,7 +870,7 @@ MainWindow
 |---|---|---|
 | `ModuleNotFoundError: No module named 'torch'` | 用错解释器（系统 python 是 3.13 无 torch） | 用 `C:/Users/Fischer/AppData/Local/Microsoft/WindowsApps/python.exe` |
 | `size mismatch for stem.weight` | ckpt 的 preset 与当前不一致 | 不要手改 preset，让它从 ckpt 读；或按 ckpt 的 preset 重建 |
-| GUI 启动白屏 / `No module named 'PyQt5'` | 用错解释器 | 同上，PyQt5 只装在 WindowsApps 那个 |
+| GUI 打不开 / 报 `No module named 'torch'` | 用错解释器（界面本身用标准库 tkinter，不需要额外 GUI 依赖） | 同上，torch 只装在 WindowsApps 那个 python |
 
 ### 7.2 训练类
 
