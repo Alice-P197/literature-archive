@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>论文复现实验室 · Paper Repro Lab</title>
-<meta name="description" content="按研究方向归档的论文复现索引：光学计算、超表面、逆向设计、代理模型、计算成像等。每篇给出可运行源码、权重、与原文并排的结果，以及逐项差异说明。">
-<meta property="og:title" content="论文复现实验室 · Paper Repro Lab">
-<meta property="og:description" content="按方向归档的论文复现索引，每篇一份可运行档案。">
+<title>文献档案馆 · Literature Archive</title>
+<meta name="description" content="按研究方向归档的文献档案：光学计算、超表面、逆向设计、代理模型、计算成像等。每篇给出可运行源码、权重、与原文并排的结果，以及逐项差异说明。">
+<meta property="og:title" content="文献档案馆 · Literature Archive">
+<meta property="og:description" content="读过的文献很多，跑通的都在这儿。每篇一份可执行档案。">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/css/site.css">
@@ -16,8 +16,8 @@
 <nav class="nav">
   <div class="nav-in">
     <a class="brand" href="index.html">
-      <span class="cn">论文复现实验室</span>
-      <span class="en">Paper Repro Lab</span>
+      <span class="cn">文献档案馆</span>
+      <span class="en">Literature Archive</span>
     </a>
     <div class="nav-links">
       <a href="index.html#archive" class="active">档案</a>
@@ -31,16 +31,22 @@
 </nav>
 
 <header class="hero" id="top">
-  <div class="wrap">
-    <div class="eyebrow">
-      <span class="dot"></span>
-      复现档案 · 持续更新
+  <div class="wrap hero-in">
+    <div class="hero-main">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        文献档案 · 持续更新
+      </div>
+      <h1>读过的文献很多，<br><em>跑通</em>的，都在这儿。</h1>
+      <p class="lede">
+        按研究方向归档，每篇文献一份可执行档案——可运行源码、预训练权重、与原文并排的结果、逐项差异说明，都在各自的档案页里。
+      </p>
+      <div class="meta-line" id="metaline">2 篇 · 5 个方向</div>
     </div>
-    <h1>每篇论文，一份<br>能跑、能改、<em>能验证</em>的复现</h1>
-    <p class="lede">
-      按研究方向归档。卡片只给结论，方法拆解、与原文并排的结果、逐项差异说明都在各自的复现页里。
-    </p>
-    <div class="meta-line" id="metaline">2 篇 · 5 个方向</div>
+    <aside class="hero-side" aria-hidden="true">
+      <div class="seal"><span>文</span><span>献</span><span>档</span><span>案</span></div>
+      <div class="vlabel">Runnable Papers Archive</div>
+    </aside>
   </div>
 </header>
 
@@ -49,13 +55,13 @@
   <div class="wrap">
     <div class="shead rv">
       <div class="kicker"><span class="num">01</span><span class="bar"></span>Archive</div>
-      <h2>复现档案</h2>
+      <h2>文献档案</h2>
     </div>
 
     <div class="toolbar rv">
       <label class="searchbox">
         <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
-        <input id="q" type="search" placeholder="搜索标题、关键词、期刊…　按 / 聚焦" aria-label="搜索复现档案" autocomplete="off">
+        <input id="q" type="search" placeholder="搜索标题、关键词、期刊…　按 / 聚焦" aria-label="搜索文献档案" autocomplete="off">
       </label>
       <div class="catbar" id="cats" role="group" aria-label="按研究方向筛选"></div>
     </div>
@@ -88,8 +94,8 @@
 <footer>
   <div class="wrap foot-in">
     <div class="foot-brand">
-      论文复现实验室
-      <span>Paper Repro Lab</span>
+      文献档案馆
+      <span>Literature Archive</span>
     </div>
     <div class="foot-links">
       <a href="index.html#archive">档案</a>

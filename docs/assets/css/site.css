@@ -64,7 +64,7 @@ section{padding:88px 0;border-top:1px solid var(--line)}
 section:first-of-type{border-top:none}
 
 /* ---------- hero ---------- */
-.hero{padding:80px 0 64px;position:relative;overflow:hidden}
+.hero{padding:84px 0 58px;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
 .hero::before{
   content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
   background-image:
@@ -75,28 +75,43 @@ section:first-of-type{border-top:none}
   -webkit-mask-image:radial-gradient(ellipse 70% 60% at 15% 0%,#000 20%,transparent 75%);
 }
 .hero > .wrap{position:relative;z-index:1}
+.hero-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:60px;align-items:start}
+.hero-main{min-width:0}
 .eyebrow{
   display:inline-flex;align-items:center;gap:10px;
   font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:26px;
+  color:var(--muted);margin-bottom:28px;
 }
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#3f8f5f;box-shadow:0 0 0 3px rgba(63,143,95,.15)}
 h1{
   font-family:var(--serif);font-weight:700;
-  font-size:clamp(34px,5.2vw,58px);line-height:1.18;letter-spacing:-.01em;
-  margin-bottom:26px;max-width:16em;
+  font-size:clamp(36px,5.4vw,62px);line-height:1.15;letter-spacing:-.015em;
+  margin-bottom:28px;max-width:14em;
 }
-h1 em{font-style:italic;color:var(--teal);white-space:nowrap;
-  background-image:linear-gradient(rgba(31,78,95,.13),rgba(31,78,95,.13));
-  background-repeat:no-repeat;
-  background-size:100% .30em;
-  background-position:0 88%;
-}
-.lede{font-size:17.5px;line-height:1.85;color:var(--ink-2);max-width:44em;margin-bottom:22px}
+h1 em{font-style:italic;color:var(--teal);white-space:nowrap}
+.lede{font-size:17.5px;line-height:1.85;color:var(--ink-2);max-width:34em;margin-bottom:26px}
 .lede strong{color:var(--ink);font-weight:600}
 .meta-line{
   font-family:var(--mono);font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:12px;
+}
+.meta-line::before{content:"";width:26px;height:1px;background:var(--line-2)}
+
+/* 档案馆印章 + 竖排英文 */
+.hero-side{display:flex;align-items:flex-start;gap:18px;padding-top:30px;justify-self:end}
+.seal{
+  width:104px;height:104px;border:2.5px solid var(--ochre);border-radius:3px;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;place-items:center;
+  padding:11px 7px;transform:rotate(-4deg);
+  outline:1px solid rgba(164,88,31,.38);outline-offset:-8px;
+  color:var(--ochre);font-family:var(--serif);font-weight:700;font-size:22px;line-height:1;
+  letter-spacing:.02em;
+}
+.vlabel{
+  writing-mode:vertical-rl;text-orientation:mixed;
+  font-family:var(--mono);font-size:10px;letter-spacing:.4em;text-transform:uppercase;
+  color:#9a9389;padding-top:12px;user-select:none;
 }
 
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
@@ -380,11 +395,11 @@ footer{
 }
 .pcard:hover{border-color:var(--line-2);box-shadow:0 8px 26px rgba(22,24,26,.075);transform:translateY(-2px)}
 .pcard .cover{
-  position:relative;aspect-ratio:16/10;background:var(--paper-2);
+  position:relative;aspect-ratio:16/10;background:#fff;
   border-bottom:1px solid var(--line);
-  display:grid;place-items:center;padding:14px;overflow:hidden;
+  display:grid;place-items:center;padding:0;overflow:hidden;
 }
-.pcard .cover img{max-width:100%;max-height:100%;object-fit:contain;transition:transform .45s ease}
+.pcard .cover img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
 .pcard:hover .cover img{transform:scale(1.025)}
 .pcard .body{padding:19px 21px 20px;display:flex;flex-direction:column;flex:1}
 .pcard .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
@@ -524,6 +539,10 @@ footer{
 .pager a.next{text-align:right}
 
 @media (max-width:900px){
+  .hero-in{grid-template-columns:1fr;gap:32px}
+  .hero-side{justify-self:start;padding-top:0;gap:14px}
+  .seal{width:72px;height:72px;font-size:15px;padding:8px 5px;border-width:2px;outline-offset:-6px}
+  .vlabel{display:none}
   .grid-4{grid-template-columns:1fr 1fr}
   .grid-3{grid-template-columns:1fr}
   .dl-grid{grid-template-columns:1fr}
