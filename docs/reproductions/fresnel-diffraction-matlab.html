@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菲涅尔衍射三算法 · S-FFT / T-FFT / D-FFT | 论文复现</title>
+<meta name="description" content="复现三种经典 FFT 菲涅尔衍射传播算法（S-FFT 卷积法、T-FFT 传递函数法、D-FFT 角谱法），用 LG 涡旋光束过环形孔径的传播做并排对比，统一接口，输出窗口与精度差异一目了然。">
+<meta property="og:title" content="菲涅尔衍射三算法 · S-FFT / T-FFT / D-FFT">
+<meta property="og:description" content="三种 FFT 衍射算法统一接口对比。">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="cn">文献档案馆</span>
+      <span class="en">Literature Archive</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#archive">档案</a>
+      <a href="../guide.html">方法</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="in">
+    <a href="../index.html">档案</a>
+    <span class="sep">/</span>
+    <span class="cur">菲涅尔衍射三算法</span>
+    <span class="sep">·</span>
+    <span>经典 FFT 衍射方法</span>
+  </div>
+</div>
+
+<div class="anchorbar">
+  <div class="in">
+    <a href="#fundamentals">基础</a>
+    <a href="#paper">论文</a>
+    <a href="#results">结果</a>
+    <a href="#method">方法</a>
+    <a href="#start">上手</a>
+    <a href="#download">下载</a>
+    <a href="#cite">引用</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      经典 FFT 衍射算法 · 项目 05
+    </div>
+    <h1>同一个光场<br>三种<em>FFT 算法</em>算出三个答案</h1>
+    <p class="lede">
+      把 <strong>S-FFT（卷积法）、T-FFT（传递函数法）、D-FFT（角谱法）</strong>
+      三种经典菲涅尔衍射传播算法统一在同一个 MATLAB 接口下，
+      用 LG 涡旋光束过环形孔径的传播做并排对比。
+      输出窗口、采样尺度、适用距离各不同——选错算法，结果会混叠。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#results">查看算法对比</a>
+      <a class="btn btn-ghost" href="https://github.com/Alice-P197/fresnel-diffraction-matlab" target="_blank" rel="noopener">GitHub 仓库</a>
+    </div>
+    <div class="chips">
+      <span class="chip">MATLAB R2021b+</span>
+      <span class="chip">无工具箱依赖</span>
+      <span class="chip">S-FFT · T-FFT · D-FFT</span>
+      <span class="chip">更新于 2026-10-02</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="n" data-count="3">0</div>
+        <div class="k">传播算法<br>统一接口</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="512" data-suffix="²">0</div>
+        <div class="k">采样网格<br>5 mm 视场</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="20">0</div>
+        <div class="k">传播距离<br>1–150 mm</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="632.8" data-suffix="nm">0</div>
+        <div class="k">波长<br>He-Ne</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 01 FUNDAMENTALS ================= -->
+<section id="fundamentals">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
+      <h2>为什么同一种衍射有三种 FFT 算法</h2>
+      <p>一句话：<b>菲涅尔衍射积分可以写成卷积，也可以写成传递函数，还可以写成角谱——三种形式对应三种 FFT 实现。</b></p>
+    </div>
+
+    <div class="prose rv">
+      <h3>1.1 菲涅尔衍射积分</h3>
+      <p>标量衍射在近轴近似下，光场从 (x₀,y₀) 传播距离 z 后的复振幅为：
+      U(x,y) = (e^{ikz}/iλz) ∬ U₀·exp[ik((x−x₀)²+(y−y₀)²)/(2z)] dx₀dy₀。
+      这是一个卷积，可以用 FFT 加速。</p>
+
+      <h3>1.2 三种形式</h3>
+      <p><b>S-FFT</b>：直接对卷积核做 FFT（单次 FFT + 一次 IFFT），
+      输出面尺寸 L_out = N·λ·d/L₀ 随距离线性增大，自然对应夫琅禾费标度。</p>
+      <p><b>T-FFT</b>：在频域乘传递函数 H(fx,fy) = exp[ikz(1−λ²(fx²+fy²)/2)]，
+      输出面与输入面同尺寸，但远距离易混叠。</p>
+      <p><b>D-FFT</b>：角谱法，传递函数模长为 1（幺正），用 max(arg,0) 滤除倏逝波，
+      中等距离下最精确。</p>
+    </div>
+
+    <div class="band rv">
+      <div><h4>S-FFT</h4><p>输出随距离放大</p></div>
+      <div><h4>T-FFT</h4><p>输出与输入同尺寸</p></div>
+      <div><h4>D-FFT</h4><p>幺正，滤倏逝波</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
+      <h2>三种算法的参数对比</h2>
+      <p>输出窗口、优缺点与适用场景。</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>方法</th><th>输出窗口</th><th>优点</th><th>注意</th></tr></thead>
+        <tbody>
+          <tr><td>S-FFT</td><td class="mono">L_out = N·λ·d/L₀</td><td>单次 FFT，自然夫琅禾费标度</td><td>像元随 d 变化，短距易混叠</td></tr>
+          <tr><td>T-FFT</td><td class="mono">L_out = L₀</td><td>每步一次 IFFT，采样不变</td><td>远距易混叠</td></tr>
+          <tr><td>D-FFT</td><td class="mono">L_out = L₀</td><td>幺正，中距最准，滤倏逝波</td><td>无夫琅禾费标度</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tbl-wrap rv" style="margin-top:24px">
+      <table>
+        <thead><tr><th>仿真参数</th><th>取值</th></tr></thead>
+        <tbody>
+          <tr><td>入射光</td><td class="mono">LG(p=0,l=0) 高斯, λ=632.8nm, w=0.5mm</td></tr>
+          <tr><td>孔径</td><td class="mono">圆孔外径 0.3 mm</td></tr>
+          <tr><td>网格</td><td class="mono">512×512, L₀=5 mm</td></tr>
+          <tr><td>传播距离</td><td class="mono">d = 1 – 150 mm（20 个距离）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
+      <h2>复现结果</h2>
+      <p>三种算法在不同传播距离下的输出窗口与强度分布对比（三联图 + 一维剖面）。</p>
+    </div>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>算法对比示意</div>
+        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/cover.jpg" alt="三种算法衍射对比" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>三联对比 + 1D 剖面</div>
+        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/cover.jpg" alt="强度剖面" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 1</b>　左：S-FFT（输出随距离放大）、T-FFT（同尺寸）、D-FFT（角谱幺正）
+      三种算法的衍射环带对比；右：叠加的一维 x/y 强度剖面。
+      完整 1–150 mm 传播动画见仓库 diffraction.gif。
+    </figcaption>
+  </div>
+</section>
+
+<!-- ================= 04 METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
+      <h2>复现方法</h2>
+      <p>统一接口下三种算法的实现要点。</p>
+    </div>
+
+    <div class="rv">
+      <div class="step">
+        <div class="num">01</div>
+        <div><h4>统一传播函数 propagate()</h4>
+        <p>通过 'Method','S-FFT'/'T-FFT'/'D-FFT' 选择算法，输入输出统一为 (U, x, y)，
+        三种方法共享同一套 LG 光束生成器与孔径掩膜。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div><h4>解析 LG 光束</h4>
+        <p>E(r,θ,z;p,l) 包含径向关联拉盖尔多项式、螺旋相位 exp(ilθ)、
+        古伊相位与球面波前因子，可生成任意 p、l 阶涡旋光束。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div><h4>三联渲染与 GIF 导出</h4>
+        <p>show_results.m 并排渲染三算法结果，叠加一维 x/y 强度剖面，
+        共享 colorbar；GIF_generator.m 逐帧追加生成 1–150 mm 传播动画。</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px">三种算法的关键差异</h3>
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>项目</th><th>S-FFT</th><th>T-FFT</th><th>D-FFT</th></tr></thead>
+        <tbody>
+          <tr><td>FFT 次数</td><td>1 次正 + 1 次逆</td><td>1 次正 + 1 次逆</td><td>1 次正 + 1 次逆</td></tr>
+          <tr><td>输出尺寸</td><td>随 d 线性增大</td><td>与输入相同</td><td>与输入相同</td></tr>
+          <tr><td>传递函数</td><td>空域卷积核</td><td>H(f) 菲涅尔</td><td>H(f) 角谱，幺正</td></tr>
+          <tr><td>适用距离</td><td>中远距离</td><td>近距离</td><td>中等距离最准</td></tr>
+          <tr><td>倏逝波</td><td>不处理</td><td>不处理</td><td>max(arg,0) 滤除</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 START ================= -->
+<section id="start">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
+      <h2>跑起来</h2>
+      <p>MATLAB R2021b+，无需工具箱，一条命令。</p>
+    </div>
+
+    <div class="codeblock rv">
+      <div class="codehead"><span>MATLAB</span>
+        <button class="copybtn" data-copy="#cmd">复制命令</button></div>
+      <pre id="cmd"><span class="c">% 主脚本：三联对比 + GIF 动画</span>
+main
+
+<span class="c">% 单独调用传播函数</span>
+[U, x, y] = propagate(U0, x0, y0, lambda, d, 'Method', 'D-FFT');
+
+<span class="c">% 生成高阶 LG 光束演示</span>
+show_LG_beam</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
+      <h2>资源下载</h2>
+    </div>
+
+    <div class="dl-grid rv">
+      <div class="dl-card primary">
+        <div class="ver">SOURCE · GitHub</div>
+        <h3>源码</h3>
+        <div class="sub">传播函数 + 示例 + GIF</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>三算法统一 propagate.m</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>LG 光束生成器</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>三联对比 + GIF 动画</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="https://github.com/Alice-P197/fresnel-diffraction-matlab" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>前往仓库
+          </a>
+        </div>
+        <div class="meta-row"><span>main</span><span>λ=632.8nm</span><span>MIT</span></div>
+      </div>
+      <div class="dl-card">
+        <div class="ver">API</div>
+        <h3>统一接口</h3>
+        <div class="sub">propagate(U0, x0, y0, lambda, d)</div>
+        <div class="pathline">Method: S-FFT / T-FFT / D-FFT</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 CITE ================= -->
+<section id="cite">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
+      <h2>引用与声明</h2>
+    </div>
+
+    <div class="bibtex rv">
+      <button class="copybtn" data-copy="#bib">复制</button>
+      <pre id="bib">@book{goodman2005fourier,
+  title     = {Introduction to Fourier Optics},
+  author    = {Goodman, Joseph W.},
+  edition   = {3rd},
+  publisher = {Roberts \& Company},
+  year      = {2005}
+}
+
+@article{matsushima2009band,
+  title   = {Band-limited angular spectrum method for numerical
+             simulation of free-space diffraction},
+  author  = {Matsushima, Kyoji and Shimobaba, Tomoyoshi},
+  journal = {Applied Optics},
+  volume  = {48},
+  number  = {32},
+  pages   = {6258--6266},
+  year    = {2009}
+}</pre>
+    </div>
+
+    <div class="notes rv">
+      <p>本复现为独立实现，三种 FFT 衍射算法为经典计算光学方法，
+      基础理论见 Goodman《傅里叶光学》，带限角谱法见 Matsushima (2009)。
+      代码仅用于学术研究与学习交流，MIT License。</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="slm-phase-optimization.html" title="上一篇">
+      <div class="dir">← 上一篇</div>
+      <div class="tt">SLM 旁瓣抑制</div>
+    </a>
+    <a class="next" href="rotational-doppler-vortex-detection.html" title="下一篇">
+      <div class="dir">下一篇 →</div>
+      <div class="tt">涡旋光旋转多普勒</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">文献档案馆<span>Literature Archive</span></div>
+    <div class="foot-links">
+      <a href="../index.html#archive">全部档案</a>
+      <a href="../guide.html">复现方法</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
+<div class="toast" id="toast">已复制</div>
+
+<script src="../assets/js/site.js"></script>
+</body>
+</html>
