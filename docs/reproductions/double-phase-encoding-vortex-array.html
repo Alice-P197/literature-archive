@@ -182,18 +182,19 @@
 
     <div class="compare rv">
       <figure>
-        <div class="lab paper"><span class="sq"></span>双相位编码 + 4f 系统示意</div>
-        <div class="figbox"><img src="../assets/img/double-phase-encoding-vortex-array/cover.jpg" alt="双相位编码涡旋阵列" data-lb></div>
+        <div class="lab paper"><span class="sq"></span>双相位编码 + 滤波掩膜</div>
+        <div class="figbox"><img src="../assets/img/double-phase-encoding-vortex-array/dpe_encoding.png" alt="双相位编码与滤波掩膜" data-lb></div>
       </figure>
       <figure>
-        <div class="lab ours"><span class="sq"></span>像面恢复强度</div>
-        <div class="figbox"><img src="../assets/img/double-phase-encoding-vortex-array/cover.jpg" alt="涡旋阵列强度" data-lb></div>
+        <div class="lab ours"><span class="sq"></span>4f 系统角谱法验证</div>
+        <div class="figbox"><img src="../assets/img/double-phase-encoding-vortex-array/dpe_validation.png" alt="4f系统验证像面恢复" data-lb></div>
       </figure>
     </div>
     <figcaption style="margin-bottom:26px">
-      <b>图 1</b>　左：双相位编码棋盘格 SLM 相位（青/橙交替）经 4f 系统双孔滤波；
-      右：像面恢复的螺旋厄米-高斯涡旋阵列强度分布，每个涡旋携带轨道角动量。
-      完整数值结果由 generate_phase.m + validation.m 生成。
+      <b>图 1</b>　左：目标场强度 |U|² = |HG(5,1)+i·HG(1,5)|²、双相位编码 SLM 相位（0~1）、
+      4f 频谱面双孔滤波掩膜。右：完整 4f 系统角谱法（ASM）验证——SLM 编码相位 →
+      透镜1 → 频谱面双孔滤波 → 透镜2 → 像面。像面恢复出螺旋厄米-高斯涡旋阵列，
+      滤波效率 η = <strong>31.04%</strong>。
     </figcaption>
 
     <p style="color:var(--muted)">
