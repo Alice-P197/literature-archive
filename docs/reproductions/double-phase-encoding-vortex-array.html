@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双相位编码涡旋阵列 · 4f 系统 + 纯相位 SLM | 论文复现</title>
+<meta name="description" content="复现 Mendoza-Yero 等（Optics Letters 2014）双相位编码方法：把螺旋厄米-高斯场 U=HG(5,1)+i·HG(1,5) 编码进纯相位 SLM，经 4f 系统双孔滤波恢复 OAM 涡旋光阵列，含完整 ASM 传播验证。">
+<meta property="og:title" content="双相位编码涡旋阵列 · 4f 系统 + 纯相位 SLM">
+<meta property="og:description" content="纯相位 SLM + 4f 滤波恢复复振幅 OAM 阵列。">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="cn">文献档案馆</span>
+      <span class="en">Literature Archive</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#archive">档案</a>
+      <a href="../guide.html">方法</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="in">
+    <a href="../index.html">档案</a>
+    <span class="sep">/</span>
+    <span class="cur">双相位编码涡旋阵列</span>
+    <span class="sep">·</span>
+    <span>Optics Letters 39(7) · 2014</span>
+  </div>
+</div>
+
+<div class="anchorbar">
+  <div class="in">
+    <a href="#fundamentals">基础</a>
+    <a href="#paper">论文</a>
+    <a href="#results">结果</a>
+    <a href="#method">方法</a>
+    <a href="#start">上手</a>
+    <a href="#download">下载</a>
+    <a href="#cite">引用</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      Optics Letters 39(7) · 2014 · 项目 07
+    </div>
+    <h1>纯相位 SLM<br>也能<em>编码任意复振幅光场</em></h1>
+    <p class="lede">
+      复现 Mendoza-Yero 等（Optics Letters, 2014）的<b>双相位编码</b>方法：
+      把复振幅目标场 U = A·exp(iφ) 拆成两个纯相位项，
+      经棋盘格交替排列 + 线性载频光栅写入 SLM，
+      再用 <strong>4f 系统双孔滤波</strong>恢复原始复振幅。
+      目标场为螺旋厄米-高斯 HG(5,1) + i·HG(1,5)，携带轨道角动量。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#results">查看复现结果</a>
+      <a class="btn btn-ghost" href="https://github.com/Alice-P197/double-phase-encoding-vortex-array" target="_blank" rel="noopener">GitHub 仓库</a>
+    </div>
+    <div class="chips">
+      <span class="chip">MATLAB R2022a+</span>
+      <span class="chip">无工具箱依赖</span>
+      <span class="chip">双相位编码 · 4f 系统</span>
+      <span class="chip">更新于 2026-10-21</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="n" data-count="1200" data-suffix="²">0</div>
+        <div class="k">SLM 分辨率<br>8 µm 像素</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="532" data-suffix="nm">0</div>
+        <div class="k">波长<br>绿光</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="100" data-suffix="mm">0</div>
+        <div class="k">4f 焦距<br>双孔滤波</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="4" data-suffix="px">0</div>
+        <div class="k">载频光栅周期<br>棋盘格交替</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 01 FUNDAMENTALS ================= -->
+<section id="fundamentals">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
+      <h2>纯相位 SLM 如何编码复振幅</h2>
+      <p>一句话：<b>把复振幅拆成两个纯相位项的和，棋盘格交替排列，再用 4f 滤波分离衍射级。</b></p>
+    </div>
+
+    <div class="prose rv">
+      <h3>1.1 纯相位 SLM 的局限</h3>
+      <p>纯相位空间光调制器（SLM）只能调制入射光的相位，不能直接调制振幅。
+      但很多光场（如涡旋光束、矢量光束）需要同时控制振幅和相位。
+      双相位编码（double-phase encoding, DPH）用一个巧妙的数学恒等式突破这个限制。</p>
+
+      <h3>1.2 双相位编码的数学</h3>
+      <p>任意复振幅 U = A·exp(iφ) 可以写成两个纯相位项之和：
+      U = ½[exp(iθ₁) + exp(iθ₂)]，其中 θ₁ = φ + acos(A)，θ₂ = φ − acos(A)。
+      把 θ₁、θ₂ 在棋盘格上交替排列，再叠加线性载频光栅，
+      则 +1 / −1 衍射级分别携带两个相位项，在远场相干叠加恢复 U。</p>
+
+      <h3>1.3 4f 系统的作用</h3>
+      <p>SLM 后的第一个透镜做傅里叶变换，频谱面上放置双孔光阑，
+      只让 +1 和 −1 级通过，挡住 0 级和高级衍射。
+      第二个透镜再做一次傅里叶变换，在像面恢复复振幅 U。</p>
+    </div>
+
+    <div class="band rv">
+      <div><h4>编码</h4><p>棋盘格双相位 + 载频</p></div>
+      <div><h4>滤波</h4><p>4f 频谱面双孔光阑</p></div>
+      <div><h4>输出</h4><p>像面复振幅 U</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
+      <h2>核心链路与参数</h2>
+      <p>Mendoza-Yero et al., Optics Letters 39(7), 1740 (2014) 的实现参数。</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>参数</th><th>取值</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr><td>N</td><td class="mono">1200</td><td>SLM / 网格分辨率</td></tr>
+          <tr><td>λ</td><td class="mono">532 nm</td><td>波长</td></tr>
+          <tr><td>dx</td><td class="mono">8 µm</td><td>SLM 像素间距</td></tr>
+          <tr><td>f</td><td class="mono">100 mm</td><td>4f 系统焦距</td></tr>
+          <tr><td>w₀</td><td class="mono">0.4 mm</td><td>HG 光束束腰</td></tr>
+          <tr><td>P_carrier</td><td class="mono">4 px</td><td>载频光栅周期</td></tr>
+          <tr><td>r_mask</td><td class="mono">0.15 mm</td><td>滤波孔径半径</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tbl-wrap rv" style="margin-top:24px">
+      <table>
+        <thead><tr><th>环节</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>目标场</td><td class="mono">U = HG(5,1) + i·HG(1,5)（螺旋厄米-高斯，带 OAM）</td></tr>
+          <tr><td>编码</td><td class="mono">θ₁ = φ+acos(A), θ₂ = φ−acos(A)，棋盘格交替 + 载频</td></tr>
+          <tr><td>滤波</td><td class="mono">频谱面双孔光阑，选 +1/−1 级</td></tr>
+          <tr><td>验证</td><td class="mono">角谱法（ASM）完整 4f 传播 + FFT 远场校验</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
+      <h2>复现结果</h2>
+      <p>双相位编码 SLM 相位图、4f 频谱双孔滤波、像面涡旋阵列强度恢复。</p>
+    </div>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>双相位编码 + 4f 系统示意</div>
+        <div class="figbox"><img src="../assets/img/double-phase-encoding-vortex-array/cover.jpg" alt="双相位编码涡旋阵列" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>像面恢复强度</div>
+        <div class="figbox"><img src="../assets/img/double-phase-encoding-vortex-array/cover.jpg" alt="涡旋阵列强度" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 1</b>　左：双相位编码棋盘格 SLM 相位（青/橙交替）经 4f 系统双孔滤波；
+      右：像面恢复的螺旋厄米-高斯涡旋阵列强度分布，每个涡旋携带轨道角动量。
+      完整数值结果由 generate_phase.m + validation.m 生成。
+    </figcaption>
+
+    <p style="color:var(--muted)">
+      validation.m 输出编码 SLM 相位、频谱面（双孔滤波叠加）、像面恢复强度三幅图，
+      并报告滤波效率 η。farfield.m 做直接 FFT 远场一致性校验。
+    </p>
+  </div>
+</section>
+
+<!-- ================= 04 METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
+      <h2>复现方法</h2>
+      <p>三个脚本依次完成编码、远场校验、4f 系统验证。</p>
+    </div>
+
+    <div class="rv">
+      <div class="step">
+        <div class="num">01</div>
+        <div><h4>生成双相位编码相位图</h4>
+        <p>generate_phase.m 构建目标场 U = HG(5,1) + i·HG(1,5)，
+        按 θ₁ = φ+acos(A)、θ₂ = φ−acos(A) 编码，棋盘格交替排列并叠加载频光栅，
+        输出 phase_slm.mat（0–2π 相位）和 filter_mask.mat（双孔光阑）。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div><h4>远场一致性校验</h4>
+        <p>farfield.m 对编码相位做直接 FFT 远场计算，检查 +1/−1 衍射级是否
+        正确分离、载频位置是否与预期一致。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div><h4>4f 系统角谱法验证</h4>
+        <p>validation.m 用角谱传播法（ASM）模拟完整 4f 系统：
+        SLM → 透镜 1（傅里叶变换）→ 双孔滤波 → 透镜 2（傅里叶变换）→ 像面，
+        验证恢复强度并输出滤波效率 η。</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px">与 Hsueh-Sawchuk (1978) 原始方法的差异</h3>
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>项目</th><th>Hsueh &amp; Sawchuk 1978</th><th>本复现（Mendoza-Yero 2014）</th><th>影响</th></tr></thead>
+        <tbody>
+          <tr><td>编码方式</td><td>双相位全息</td><td class="mono">棋盘格 + 载频</td><td>分离衍射级更干净</td></tr>
+          <tr><td>滤波</td><td>光阑</td><td class="mono">4f 双孔光阑</td><td>仅通过 ±1 级</td></tr>
+          <tr><td>目标场</td><td>通用</td><td class="mono">HHG OAM 阵列</td><td>验证复振幅恢复</td></tr>
+          <tr><td>验证</td><td>实验</td><td class="mono">ASM 数值仿真</td><td>完整 4f 链路</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 START ================= -->
+<section id="start">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
+      <h2>跑起来</h2>
+      <p>MATLAB R2022a+，无需工具箱，三条脚本。</p>
+    </div>
+
+    <div class="codeblock rv">
+      <div class="codehead"><span>MATLAB</span>
+        <button class="copybtn" data-copy="#cmd">复制命令</button></div>
+      <pre id="cmd">addpath('functions');
+
+<span class="c">% 1. 双相位编码 + 滤波掩膜</span>
+generate_phase      <span class="c">% 生成 phase_slm.mat, filter_mask.mat</span>
+
+<span class="c">% 2. 远场一致性校验</span>
+farfield
+
+<span class="c">% 3. 完整 4f 系统 ASM 验证</span>
+validation</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
+      <h2>资源下载</h2>
+    </div>
+
+    <div class="dl-grid rv">
+      <div class="dl-card primary">
+        <div class="ver">SOURCE · GitHub</div>
+        <h3>源码与数据</h3>
+        <div class="sub">编码 + 校验 + 4f 验证</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>HG 光束生成器</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>角谱传播 (ASM)</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>编码相位 + 滤波数据</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="https://github.com/Alice-P197/double-phase-encoding-vortex-array" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>前往仓库
+          </a>
+        </div>
+        <div class="meta-row"><span>main</span><span>λ=532nm</span><span>研究用</span></div>
+      </div>
+      <div class="dl-card">
+        <div class="ver">FUNCTIONS</div>
+        <h3>核心函数</h3>
+        <div class="sub">functions/ 目录</div>
+        <div class="pathline">HG_beam / angularSpectrumPropagation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 CITE ================= -->
+<section id="cite">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
+      <h2>引用与声明</h2>
+    </div>
+
+    <div class="bibtex rv">
+      <button class="copybtn" data-copy="#bib">复制</button>
+      <pre id="bib">@article{mendozayero2014encoding,
+  title   = {Encoding complex fields by using a phase-only
+             optical element},
+  author  = {Mendoza-Yero, O. and M{\'i}nguez-Vega, G.
+             and Lancis, J.},
+  journal = {Optics Letters},
+  volume  = {39},
+  number  = {7},
+  pages   = {1740--1743},
+  year    = {2014},
+  doi     = {10.1364/OL.39.001740}
+}
+
+@article{hsueh1978computer,
+  title   = {Computer-generated double-phase holograms},
+  author  = {Hsueh, C. K. and Sawchuk, A. A.},
+  journal = {Applied Optics},
+  volume  = {17},
+  number  = {24},
+  pages   = {3874--3883},
+  year    = {1978}
+}</pre>
+    </div>
+
+    <div class="notes rv">
+      <p>本复现为独立实现。双相位编码方法源自 Hsueh &amp; Sawchuk (1978)，
+      棋盘格 + 4f 滤波实现参考 Mendoza-Yero et al. (Optics Letters, 2014)。
+      螺旋厄米-高斯光束与 OAM 阵列见 López-Mariscal &amp; Gutiérrez-Vega (2007)。
+      代码仅用于学术研究与学习交流。</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="rotational-doppler-vortex-detection.html" title="上一篇">
+      <div class="dir">← 上一篇</div>
+      <div class="tt">涡旋光旋转多普勒</div>
+    </a>
+    <a class="next" href="../index.html#archive" title="返回档案">
+      <div class="dir">返回档案 →</div>
+      <div class="tt">全部复现记录</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">文献档案馆<span>Literature Archive</span></div>
+    <div class="foot-links">
+      <a href="../index.html#archive">全部档案</a>
+      <a href="../guide.html">复现方法</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
+<div class="toast" id="toast">已复制</div>
+
+<script src="../assets/js/site.js"></script>
+</body>
+</html>
