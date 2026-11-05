@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    文献档案数据源
    ------------------------------------------------------------
    新增一篇复现只需要三步：
@@ -62,5 +62,71 @@ window.REPRODUCTIONS = [
     tags: ["PyTorch", "Transformer", "可微 BPM", "自由曲面"],
     cover: "assets/img/metae/fig6_repro.jpg",
     href: "reproductions/metae-former.html"
+  },
+  {
+    no: 3,
+    slug: "doe-image-reconstruction",
+    status: "done",
+    statusText: "已复现",
+    venue: "Optik 35 · 1972 (GS) + MRAF",
+    title: "纯相位 DOE 设计：信号窗口 IFTA + MRAF 再现目标图像",
+    sum: "高斯入射 1.5 mm 相位片，50 mm 自由空间再现 40 mm 图像，RMSE 0.0014、效率 42.7%。",
+    cats: ["inverse-design", "optimization", "computational-imaging"],
+    tags: ["Python", "IFTA", "Gerchberg-Saxton", "MRAF", "DOE"],
+    cover: "assets/img/doe-image-reconstruction/doe_compare.png",
+    href: "reproductions/doe-image-reconstruction.html"
+  },
+  {
+    no: 4,
+    slug: "slm-phase-optimization",
+    status: "done",
+    statusText: "已复现",
+    venue: "伴随梯度逆设计方法",
+    title: "SLM 螺旋锥透镜旁瓣抑制：径向相位参数化 + 伴随梯度优化",
+    sum: "1920×1080 SLM 螺旋锥透镜，伴随梯度优化后主瓣能量占比 3.06%→87.9%，旁瓣 −4.5→−15.5 dB。",
+    cats: ["optimization", "inverse-design", "computational-imaging"],
+    tags: ["Python", "伴随梯度", "Adam", "SLM", "贝塞尔光束"],
+    cover: "assets/img/slm-phase-optimization/preview_gauss_result.png",
+    href: "reproductions/slm-phase-optimization.html"
+  },
+  {
+    no: 5,
+    slug: "fresnel-diffraction-matlab",
+    status: "done",
+    statusText: "已复现",
+    venue: "经典 FFT 衍射算法",
+    title: "菲涅尔衍射三种 FFT 算法对比：S-FFT / T-FFT / D-FFT",
+    sum: "LG 涡旋光束过环孔传播，统一接口下对比三种 FFT 衍射算法的输出窗口与精度。",
+    cats: ["computational-imaging", "optical-computing"],
+    tags: ["MATLAB", "Fresnel衍射", "角谱法", "LG光束", "FFT"],
+    cover: "assets/img/fresnel-diffraction-matlab/cover.jpg",
+    href: "reproductions/fresnel-diffraction-matlab.html"
+  },
+  {
+    no: 6,
+    slug: "rotational-doppler-vortex-detection",
+    status: "done",
+    statusText: "已复现",
+    venue: "红外与激光工程 50(9) · 2021",
+    title: "涡旋光旋转多普勒测速：任意入射条件下的转速探测（丁友 2021 复现）",
+    sum: "复现丁友 2021 公式，特征点几何平均法提取转速，误差 0.0000%，频谱展宽与理论边界一致。",
+    cats: ["optical-computing", "computational-imaging"],
+    tags: ["MATLAB", "轨道角动量", "旋转多普勒", "花瓣模", "拍频"],
+    cover: "assets/img/rotational-doppler-vortex-detection/fig_cases_compare.png",
+    href: "reproductions/rotational-doppler-vortex-detection.html"
+  },
+  {
+    no: 7,
+    slug: "double-phase-encoding-vortex-array",
+    status: "done",
+    statusText: "已复现",
+    venue: "Optics Letters 39(7) · 2014",
+    title: "双相位编码生成涡旋光阵列：4f 系统 + 纯相位 SLM",
+    sum: "把 HG(5,1)+i·HG(1,5) 螺旋厄米高斯场编码进纯相位 SLM，经 4f 滤波恢复 OAM 阵列。",
+    cats: ["optical-computing", "metasurface", "generative"],
+    tags: ["MATLAB", "双相位编码", "4f系统", "OAM", "角谱法"],
+    cover: "assets/img/double-phase-encoding-vortex-array/cover.jpg",
+    href: "reproductions/double-phase-encoding-vortex-array.html"
   }
 ];
+
