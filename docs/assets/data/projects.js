@@ -99,7 +99,7 @@ window.REPRODUCTIONS = [
     sum: "LG 涡旋光束过环孔传播，统一接口下对比三种 FFT 衍射算法的输出窗口与精度。",
     cats: ["computational-imaging", "optical-computing"],
     tags: ["MATLAB", "Fresnel衍射", "角谱法", "LG光束", "FFT"],
-    cover: "assets/img/fresnel-diffraction-matlab/cover.jpg",
+    cover: "assets/img/fresnel-diffraction-matlab/fresnel_compare_d30.png",
     href: "reproductions/fresnel-diffraction-matlab.html"
   },
   {
@@ -125,7 +125,7 @@ window.REPRODUCTIONS = [
     sum: "把 HG(5,1)+i·HG(1,5) 螺旋厄米高斯场编码进纯相位 SLM，经 4f 滤波恢复 OAM 阵列。",
     cats: ["optical-computing", "metasurface", "generative"],
     tags: ["MATLAB", "双相位编码", "4f系统", "OAM", "角谱法"],
-    cover: "assets/img/double-phase-encoding-vortex-array/cover.jpg",
+    cover: "assets/img/double-phase-encoding-vortex-array/dpe_validation.png",
     href: "reproductions/double-phase-encoding-vortex-array.html"
   }
 ];
