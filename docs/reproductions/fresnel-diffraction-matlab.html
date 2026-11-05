@@ -174,18 +174,34 @@
 
     <div class="compare rv">
       <figure>
-        <div class="lab paper"><span class="sq"></span>算法对比示意</div>
-        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/cover.jpg" alt="三种算法衍射对比" data-lb></div>
+        <div class="lab paper"><span class="sq"></span>三算法对比 (d=30 mm)</div>
+        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/fresnel_compare_d30.png" alt="S-FFT D-FFT T-FFT 对比 d=30mm" data-lb></div>
       </figure>
       <figure>
-        <div class="lab ours"><span class="sq"></span>三联对比 + 1D 剖面</div>
-        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/cover.jpg" alt="强度剖面" data-lb></div>
+        <div class="lab ours"><span class="sq"></span>一维强度剖面</div>
+        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/fresnel_profile_1d.png" alt="一维强度剖面对比" data-lb></div>
       </figure>
     </div>
     <figcaption style="margin-bottom:26px">
-      <b>图 1</b>　左：S-FFT（输出随距离放大）、T-FFT（同尺寸）、D-FFT（角谱幺正）
-      三种算法的衍射环带对比；右：叠加的一维 x/y 强度剖面。
-      完整 1–150 mm 传播动画见仓库 diffraction.gif。
+      <b>图 1</b>　左：d = 30 mm 处 S-FFT / D-FFT / T-FFT 三种算法的输出强度。
+      S-FFT 输出窗口随距离线性放大（±0.5 mm），D-FFT 与 T-FFT 保持输入窗口（±2.5 mm），
+      衍射环带结构一致。右：沿 x 轴的一维强度剖面叠加，三算法主瓣位置吻合，
+      旁瓣分布因采样窗口不同略有差异。
+    </figcaption>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>近距离 d=5 mm</div>
+        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/fresnel_compare_d5.png" alt="d=5mm 三算法对比" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>远距离 d=100 mm</div>
+        <div class="figbox"><img src="../assets/img/fresnel-diffraction-matlab/fresnel_compare_d100.png" alt="d=100mm 三算法对比" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 2</b>　左：d = 5 mm 近距离，T-FFT 与 D-FFT 仍保持输入窗口，S-FFT 窗口很小（近场聚焦）；
+      右：d = 100 mm 远距离，夫琅禾费区，S-FFT 输出窗口显著放大，三算法衍射图样趋于一致。
     </figcaption>
   </div>
 </section>
