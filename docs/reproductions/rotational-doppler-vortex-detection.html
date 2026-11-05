@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>涡旋光旋转多普勒测速 · 丁友 2021 复现 | 论文复现</title>
+<meta name="description" content="复现丁友等《涡旋光任意入射条件下的旋转物体转速探测》（红外与激光工程 2021, 50(9):20210451）：任意入射频移分布（公式10）、特征点几何平均法提取转速（公式11/12），误差 0.0000%，频谱展宽与理论边界一致。">
+<meta property="og:title" content="涡旋光旋转多普勒测速 · 丁友 2021 复现">
+<meta property="og:description" content="任意入射条件下转速探测，特征点几何平均法误差 0%。">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="cn">文献档案馆</span>
+      <span class="en">Literature Archive</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#archive">档案</a>
+      <a href="../guide.html">方法</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="in">
+    <a href="../index.html">档案</a>
+    <span class="sep">/</span>
+    <span class="cur">涡旋光旋转多普勒</span>
+    <span class="sep">·</span>
+    <span>红外与激光工程 2021</span>
+  </div>
+</div>
+
+<div class="anchorbar">
+  <div class="in">
+    <a href="#fundamentals">基础</a>
+    <a href="#paper">论文</a>
+    <a href="#results">结果</a>
+    <a href="#method">方法</a>
+    <a href="#start">上手</a>
+    <a href="#download">下载</a>
+    <a href="#cite">引用</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      红外与激光工程 50(9) · 2021 · 项目 06
+    </div>
+    <h1>用光的轨道角动量<br><em>测出旋转物体的转速</em></h1>
+    <p class="lede">
+      复现丁友等 <strong>《涡旋光任意入射条件下的旋转物体转速探测》</strong>
+      （红外与激光工程, 2021, 50(9): 20210451）。
+      用叠加态涡旋光照射旋转平板，从反射光拍频频谱提取转速。
+      特征点几何平均法反推转速误差 <strong>0.0000%</strong>，
+      任意入射频谱展宽区间与理论边界完全吻合。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#results">查看复现结果</a>
+      <a class="btn btn-ghost" href="https://github.com/Alice-P197/rotational-doppler-vortex-detection" target="_blank" rel="noopener">GitHub 仓库</a>
+    </div>
+    <div class="chips">
+      <span class="chip">MATLAB R2025</span>
+      <span class="chip">无工具箱依赖</span>
+      <span class="chip">轨道角动量 · 拍频</span>
+      <span class="chip">更新于 2026-10-09</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="n" data-count="0.0000" data-suffix="%" data-dec="4">0</div>
+        <div class="k">转速反推误差<br>真值 50 Hz</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="1800" data-suffix="Hz">0</div>
+        <div class="k">基准频移 lΩ/π<br>l=±18, f=50Hz</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="1303" data-suffix="–2481 Hz">0</div>
+        <div class="k">频谱展宽区间<br>与理论边界一致</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="5">0</div>
+        <div class="k">复现图<br>公式10/11/12 全覆盖</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 01 FUNDAMENTALS ================= -->
+<section id="fundamentals">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
+      <h2>旋转多普勒效应从哪来</h2>
+      <p>一句话：<b>涡旋光的坡印廷矢量是斜的，照到旋转表面上就会产生多普勒频移。</b></p>
+    </div>
+
+    <div class="prose rv">
+      <h3>1.1 轨道角动量与倾斜的坡印廷矢量</h3>
+      <p>涡旋光携带轨道角动量（OAM），波前是螺旋面。坡印廷矢量相对光轴倾斜，
+      倾斜角 α 满足 sinα = l/(kr)。当光照射旋转物体时，表面散射点的旋转线速度
+      在坡印廷矢量方向有非零投影，产生旋转多普勒频移（Lavery et al., Science 2013）。</p>
+
+      <h3>1.2 对准入射的简单情形</h3>
+      <p>光轴与转轴重合时，叠加态 ±l 光束的拍频频移为 Δf = lΩ/π，
+      其中 Ω = 2πf 是旋转角速度。测得拍频即可反推转速 f = Δf/(2l)。</p>
+
+      <h3>1.3 任意入射的复杂性</h3>
+      <p>实际中光束往往倾斜入射、存在横向偏移。此时频移随散射点方位角 θ 分布，
+      频谱会展宽。丁友 2021 给出了频移分布的解析公式（公式 10）和
+      特征点提取方法（公式 11/12），可以从展宽频谱中恢复出真实转速。</p>
+    </div>
+
+    <div class="band rv">
+      <div><h4>入射</h4><p>叠加态 ±l 涡旋光</p></div>
+      <div><h4>作用</h4><p>旋转平板散射</p></div>
+      <div><h4>检测</h4><p>反射光拍频频谱</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
+      <h2>论文的核心公式</h2>
+      <p>任意入射频移分布（公式 10）与特征点提取（公式 11/12）。</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>公式</th><th>内容</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>公式 10</td><td class="mono">Δf(θ) = (lΩ/π)[sin²θ/cosγ + cosγ·cos²θ + (d/r)(sinθ·cosφ − cosθ·sinφ·cosγ)]</td><td>任意入射频移随方位角 θ 的分布</td></tr>
+          <tr><td>公式 11</td><td class="mono">Δf₀, Δf_{π/2}, Δf_π, Δf_{3π/2}</td><td>θ = 0, π/2, π, 3π/2 四个特征点</td></tr>
+          <tr><td>公式 12</td><td class="mono">f_mod = √[((Δf₀+Δf_π)/2)·((Δf_{π/2}+Δf_{3π/2})/2)] = lΩ/π</td><td>几何平均，对偶点平均后 d、φ 项抵消</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tbl-wrap rv" style="margin-top:24px">
+      <table>
+        <thead><tr><th>仿真参数</th><th>取值</th></tr></thead>
+        <tbody>
+          <tr><td>拓扑荷</td><td class="mono">l = ±18</td></tr>
+          <tr><td>旋转频率</td><td class="mono">f = 50 Hz</td></tr>
+          <tr><td>倾斜角 γ</td><td class="mono">30°</td></tr>
+          <tr><td>横向位移 d</td><td class="mono">1 mm</td></tr>
+          <tr><td>散射半径 r</td><td class="mono">4 mm</td></tr>
+          <tr><td>方位夹角 φ</td><td class="mono">30°</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
+      <h2>复现结果</h2>
+      <p>任意入射频移分布（公式 10）与特征点提取（公式 12）的复现。</p>
+    </div>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>频移分布 Δf(θ)</div>
+        <div class="figbox"><img src="../assets/img/rotational-doppler-vortex-detection/fig3_theory_curve.png" alt="频移分布曲线" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>特征点与基准频移</div>
+        <div class="figbox"><img src="../assets/img/rotational-doppler-vortex-detection/fig_special_points.png" alt="特征点提取" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 1</b>　左：任意入射条件下频移随方位角 θ 的分布（文献图 3 复现）；
+      右：四个特征点频移与基准频移 lΩ/π = 1800 Hz。
+    </figcaption>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>对准入射频谱</div>
+        <div class="figbox"><img src="../assets/img/rotational-doppler-vortex-detection/fig_spectrum_aligned.png" alt="对准入射单峰频谱" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>任意入射频谱展宽</div>
+        <div class="figbox"><img src="../assets/img/rotational-doppler-vortex-detection/fig_spectrum_general.png" alt="任意入射频谱展宽" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 2</b>　左：对准入射时频谱为单峰（1800 Hz）；右：任意入射时频谱展宽至
+      [1303, 2481] Hz，与理论边界 [1302.71, 2481.44] Hz 一致。
+    </figcaption>
+
+    <div class="tbl-wrap rv" style="margin-top:36px">
+      <table>
+        <thead><tr><th>项目</th><th>结果</th></tr></thead>
+        <tbody>
+          <tr><td>基准频移 lΩ/π</td><td>1800.0000 Hz</td></tr>
+          <tr><td>特征点提取 f_mod</td><td>1800.0000 Hz</td></tr>
+          <tr><td>反推转速</td><td>50.0000 Hz（误差 0.0000%）</td></tr>
+          <tr><td>任意入射频移范围</td><td>[1302.71, 2481.44] Hz</td></tr>
+          <tr><td>频谱展宽区间</td><td>[1303, 2481] Hz（与理论一致）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
+      <h2>复现方法</h2>
+      <p>包含两部分：花瓣模旋转多普勒仿真 + 丁友 2021 文献复现。</p>
+    </div>
+
+    <div class="rv">
+      <div class="step">
+        <div class="num">01</div>
+        <div><h4>花瓣模光束生成</h4>
+        <p>petal_mode_beam.m 生成 LG(+l) + LG(−l) 叠加态花瓣模，
+        含 (√2r/w)^|l| 暗心因子，l=1~5 的花瓣分布逐一验证。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div><h4>角向傅里叶法快速拍频仿真</h4>
+        <p>rotating_petal_signal.m 用角向傅里叶法快速生成旋转花瓣模的拍频信号，
+        extract_beat_freq.m 做 FFT 提取拍频。对准入射下理论拍频 f_beat = 2l·f，
+        反推转速误差 < 0.01%。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div><h4>丁友 2021 公式复现</h4>
+        <p>reproduce_main.m 复现公式 10 频移分布曲线、公式 11/12 特征点提取、
+        对准入射单峰频谱、任意入射频谱展宽、四种入射工况对比，共 5 张图。</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px">与论文的差异</h3>
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>项目</th><th>论文</th><th>本复现</th><th>影响</th></tr></thead>
+        <tbody>
+          <tr><td>公式 (12) 形式</td><td>算术平均（排版丢根号）</td><td class="mono">几何平均 √(…)</td><td>与文献实验值 1903.58 Hz 吻合</td></tr>
+          <tr><td>验证方式</td><td>实验测量</td><td class="mono">数值仿真</td><td>无噪声，误差为 0</td></tr>
+          <tr><td>花瓣模部分</td><td>未涉及</td><td class="mono">额外 POV 仿真</td><td>补充拍频物理直觉</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:16px;color:var(--muted)">
+      关键修正：文献原文公式 (12) 排版丢失了根号，本复现采用几何平均形式
+      √(2012×1801) = 1903.6 Hz，与文献实验值 1903.58 Hz 吻合，验证了几何平均的正确性。
+    </p>
+  </div>
+</section>
+
+<!-- ================= 05 START ================= -->
+<section id="start">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
+      <h2>跑起来</h2>
+      <p>MATLAB R2018b+，无需工具箱。</p>
+    </div>
+
+    <div class="codeblock rv">
+      <div class="codehead"><span>MATLAB</span>
+        <button class="copybtn" data-copy="#cmd">复制命令</button></div>
+      <pre id="cmd"><span class="c">% 1. 花瓣模旋转多普勒仿真</span>
+cd POV
+main_rotational_doppler
+
+<span class="c">% 2. 丁友 2021 文献复现</span>
+cd ../reproduce_ding2021
+reproduce_main</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
+      <h2>资源下载</h2>
+    </div>
+
+    <div class="dl-grid rv">
+      <div class="dl-card primary">
+        <div class="ver">SOURCE · GitHub</div>
+        <h3>源码与结果</h3>
+        <div class="sub">POV 仿真 + 丁友 2021 复现</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>花瓣模旋转多普勒仿真</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>丁友 2021 公式复现</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>5 张复现结果图</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="https://github.com/Alice-P197/rotational-doppler-vortex-detection" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>前往仓库
+          </a>
+        </div>
+        <div class="meta-row"><span>main</span><span>l=±18</span><span>研究用</span></div>
+      </div>
+      <div class="dl-card">
+        <div class="ver">MODULES</div>
+        <h3>核心模块</h3>
+        <div class="sub">POV/ + reproduce_ding2021/</div>
+        <div class="pathline">petal_mode / beat_freq / reproduce_main</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 CITE ================= -->
+<section id="cite">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
+      <h2>引用与声明</h2>
+    </div>
+
+    <div class="bibtex rv">
+      <button class="copybtn" data-copy="#bib">复制</button>
+      <pre id="bib">@article{ding2021rotational,
+  title   = {涡旋光任意入射条件下的旋转物体转速探测},
+  author  = {丁友 and 丁源圣 and 邱松 and 刘通 and 任元},
+  journal = {红外与激光工程},
+  volume  = {50},
+  number  = {9},
+  pages   = {20210451},
+  year    = {2021},
+  doi     = {10.3788/IRLA20210451}
+}
+
+@article{lavery2013spinning,
+  title   = {Detection of a spinning object using light's
+             orbital angular momentum},
+  author  = {Lavery, M. P. J. and others},
+  journal = {Science},
+  volume  = {341},
+  number  = {6145},
+  pages   = {537--540},
+  year    = {2013}
+}</pre>
+    </div>
+
+    <div class="notes rv">
+      <p>本复现为独立实现，非官方代码。复现文献为丁友等（红外与激光工程, 2021）。
+      公式 (12) 采用几何平均形式（修正原文排版丢失的根号），与文献实验值吻合验证。
+      仅用于学术研究与学习交流，引用请注明出处。</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="fresnel-diffraction-matlab.html" title="上一篇">
+      <div class="dir">← 上一篇</div>
+      <div class="tt">菲涅尔衍射三算法</div>
+    </a>
+    <a class="next" href="double-phase-encoding-vortex-array.html" title="下一篇">
+      <div class="dir">下一篇 →</div>
+      <div class="tt">双相位编码涡旋阵列</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">文献档案馆<span>Literature Archive</span></div>
+    <div class="foot-links">
+      <a href="../index.html#archive">全部档案</a>
+      <a href="../guide.html">复现方法</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
+<div class="toast" id="toast">已复制</div>
+
+<script src="../assets/js/site.js"></script>
+</body>
+</html>
