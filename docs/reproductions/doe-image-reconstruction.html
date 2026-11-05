@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>纯相位 DOE 设计 · IFTA+MRAF 再现目标图像 | 论文复现</title>
+<meta name="description" content="复现 Gerchberg-Saxton 迭代傅里叶变换算法（IFTA）与多分辨率轴向滤波（MRAF）的混合方法：高斯光束入射 1.5 mm 纯相位片，自由空间传播 50 mm 再现 40 mm 目标图像，RMSE 0.0014、衍射效率 42.7%。">
+<meta property="og:title" content="纯相位 DOE 设计 · IFTA+MRAF 再现目标图像">
+<meta property="og:description" content="信号窗口约束 IFTA + MRAF 混合，120 次迭代 RMSE 0.41 降至 0.0014。">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316181a'/%3E%3Cg fill='%23fbfaf7'%3E%3Crect x='5' y='18' width='4' height='9'/%3E%3Crect x='11' y='12' width='4' height='15'/%3E%3Crect x='17' y='6' width='4' height='21'/%3E%3Crect x='23' y='15' width='4' height='12'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="cn">文献档案馆</span>
+      <span class="en">Literature Archive</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#archive">档案</a>
+      <a href="../guide.html">方法</a>
+      <a class="nav-gh" href="https://github.com/Alice-P197" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="in">
+    <a href="../index.html">档案</a>
+    <span class="sep">/</span>
+    <span class="cur">纯相位 DOE 设计</span>
+    <span class="sep">·</span>
+    <span>Optik 1972 · MRAF</span>
+  </div>
+</div>
+
+<div class="anchorbar">
+  <div class="in">
+    <a href="#fundamentals">基础</a>
+    <a href="#paper">论文</a>
+    <a href="#results">结果</a>
+    <a href="#method">方法</a>
+    <a href="#start">上手</a>
+    <a href="#download">下载</a>
+    <a href="#cite">引用</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      Optik 35 · 1972 (GS) + MRAF · 项目 03
+    </div>
+    <h1>用一张相位片<br>在自由空间里<em>画出目标图像</em></h1>
+    <p class="lede">
+      这是 <strong>信号窗口约束 IFTA + MRAF</strong> 的完整复现：
+      高斯光束入射 1.5 mm 纯相位衍射光学元件，自由空间传播 50 mm，
+      在 40 mm 区域再现目标灰度图像。120 次迭代后重建 RMSE 降至
+      <strong>0.0014</strong>，衍射效率 <strong>42.7%</strong>。
+      交付：Python 源码、相位数据、HTML 报告、结果图四件套。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#results">查看复现结果</a>
+      <a class="btn btn-ghost" href="https://github.com/Alice-P197/doe-image-reconstruction" target="_blank" rel="noopener">GitHub 仓库</a>
+    </div>
+    <div class="chips">
+      <span class="chip">Python 3.x</span>
+      <span class="chip">NumPy · complex64</span>
+      <span class="chip">IFTA · MRAF</span>
+      <span class="chip">更新于 2026-08-17</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="n" data-count="0.0014" data-dec="4">0</div>
+        <div class="k">重建 RMSE<br>连续相位，120 次迭代</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="42.7" data-suffix="%" data-dec="1">0</div>
+        <div class="k">衍射效率 η<br>信号窗口内能量占比</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="1.5" data-suffix="mm">0</div>
+        <div class="k">DOE 口径<br>1536×1536 px</div>
+      </div>
+      <div class="stat">
+        <div class="n" data-count="50" data-suffix="mm">0</div>
+        <div class="k">工作距离<br>Fresnel 衍射</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 01 FUNDAMENTALS ================= -->
+<section id="fundamentals">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">01</span><span class="bar"></span>Fundamentals</div>
+      <h2>纯相位 DOE 图像再现，到底在做什么</h2>
+      <p>一句话：<b>用一片只调相位、不调振幅的透明片，把入射光"掰"成你想要的图案。</b></p>
+    </div>
+
+    <div class="prose rv">
+      <h3>1.1 什么是纯相位 DOE</h3>
+      <p>衍射光学元件（DOE）通过微结构改变入射光的相位分布。纯相位 DOE
+      只调制相位、不吸收光，理论上能量效率远高于振幅型全息图。
+      设计目标：给定入射光场和目标图像，求出 DOE 平面的相位分布 φ(x,y)，
+      使光传播到目标面后强度 |U|² 逼近目标。</p>
+
+      <h3>1.2 为什么需要迭代算法</h3>
+      <p>从目标强度反推相位是经典的<b>相位恢复问题</b>——测量只给振幅，
+      相位信息丢失，解不唯一。Gerchberg-Saxton（1972）提出在 DOE 面与
+      像面之间来回做傅里叶变换，每一步施加已知约束（振幅），逐步收敛到
+      可行相位。IFTA 是其改进型，MRAF 进一步混合多尺度轴向滤波抑制散斑。</p>
+
+      <h3>1.3 本复现的物理约束</h3>
+      <p>波长 λ = 1.064 µm，DOE 1.5×1.5 mm（1536×1536 px），自由空间
+      Fresnel 衍射 z = 50 mm，目标区域 40×40 mm。近轴近似误差约 2%，
+      Nyquist 校验通过（最大坐标 27.2 mm > 半宽 20 mm），无混叠。</p>
+    </div>
+
+    <div class="band rv">
+      <div><h4>入射</h4><p>基模高斯光束，w₀ = 0.75 mm</p></div>
+      <div><h4>变换</h4><p>纯相位 DOE → Fresnel 衍射 50 mm</p></div>
+      <div><h4>输出</h4><p>40 mm 目标灰度图像</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">02</span><span class="bar"></span>The Paper</div>
+      <h2>核心链路与参数</h2>
+      <p>IFTA（Gerchberg-Saxton, 1972）+ MRAF 混合的关键参数表。</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>环节</th><th>参数</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>波长 λ</td><td class="mono">1.064 µm</td><td>近红外，相位深度 ∝ 1/λ</td></tr>
+          <tr><td>DOE</td><td class="mono">1.5×1.5 mm, 1536×1536 px</td><td>像素 0.98 µm，纯相位</td></tr>
+          <tr><td>入射光</td><td class="mono">高斯 w₀ = 0.75 mm</td><td>DOE 半径 = 束腰半径</td></tr>
+          <tr><td>传播</td><td class="mono">Fresnel, z = 50 mm</td><td>近轴，误差 ~2%</td></tr>
+          <tr><td>信号窗口</td><td class="mono">40×40 mm, 1128×1128 px</td><td>窗内施加目标振幅，窗外自由</td></tr>
+          <tr><td>MRAF 混合</td><td class="mono">m = 0.8</td><td>抑制散斑</td></tr>
+          <tr><td>迭代</td><td class="mono">3 组随机初相 × 120 次</td><td>取 RMSE 最优</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">03</span><span class="bar"></span>Results</div>
+      <h2>复现结果</h2>
+      <p>目标图像（罗小黑）与重建结果并排，连续相位与 256 级量化对比。</p>
+    </div>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>目标图像</div>
+        <div class="figbox"><img src="../assets/img/doe-image-reconstruction/doe_target.png" alt="目标图像" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>重建结果</div>
+        <div class="figbox"><img src="../assets/img/doe-image-reconstruction/doe_reconstruction.png" alt="重建结果" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 1</b>　左：40×40 mm 目标灰度图；右：50 mm 处重建像。重建像相对目标旋转 180°
+      （傅里叶传播固有性质，预旋转目标即可得正立像）。
+    </figcaption>
+
+    <div class="compare rv">
+      <figure>
+        <div class="lab paper"><span class="sq"></span>DOE 相位</div>
+        <div class="figbox"><img src="../assets/img/doe-image-reconstruction/doe_phase.png" alt="DOE相位" data-lb></div>
+      </figure>
+      <figure>
+        <div class="lab ours"><span class="sq"></span>收敛曲线</div>
+        <div class="figbox"><img src="../assets/img/doe-image-reconstruction/doe_convergence.png" alt="收敛曲线" data-lb></div>
+      </figure>
+    </div>
+    <figcaption style="margin-bottom:26px">
+      <b>图 2</b>　左：优化得到的 DOE 相位分布（0–2π 包裹）；右：RMSE 从 0.41 降至 0.0014。
+    </figcaption>
+
+    <div class="tbl-wrap rv" style="margin-top:36px">
+      <table>
+        <thead><tr><th>指标</th><th>连续相位</th><th>256 级量化 (8 bit)</th></tr></thead>
+        <tbody>
+          <tr><td>重建 RMSE（最优）</td><td>0.0014</td><td>0.0040</td></tr>
+          <tr><td>衍射效率 η</td><td>42.7%</td><td>42.7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:16px;color:var(--muted)">
+      256 级量化性能几乎不变，兼容 SLM 与多台阶光刻。
+    </p>
+  </div>
+</section>
+
+<!-- ================= 04 METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">04</span><span class="bar"></span>Method</div>
+      <h2>复现方法</h2>
+      <p>信号窗口 IFTA + MRAF 的迭代循环，以及与标准 GS 的关键差异。</p>
+    </div>
+
+    <div class="rv">
+      <div class="step">
+        <div class="num">01</div>
+        <div><h4>Fresnel 正传播</h4>
+        <p>DOE 面光场 E·exp[iφ] 经 FFT 形式的 Fresnel 衍射传播到 50 mm 像面：
+        U = FFT{ E·exp[iπ(x²+y²)/(λz)] }。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div><h4>信号窗口振幅约束 + MRAF 混合</h4>
+        <p>窗内按目标振幅约束，并以 m = 0.8 混合抑制散斑：
+        U′_SW = [m·s·A_t + (1−m)|U|]·e^{i∠U}，s = √(E_SW/ΣA_t²) 做能量归一。
+        窗外保持自由，吸收残差。</p></div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div><h4>逆传播与相位重置</h4>
+        <p>约束后的光场逆 FFT 回 DOE 面，振幅重置为高斯入射 A_Gauss，
+        保留相位 φ，进入下一轮迭代。3 组随机初始相位各跑 120 次取最优。</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px">与标准 Gerchberg-Saxton 的差异</h3>
+    <div class="tbl-wrap rv">
+      <table>
+        <thead><tr><th>项目</th><th>标准 GS</th><th>本复现 (IFTA+MRAF)</th><th>影响</th></tr></thead>
+        <tbody>
+          <tr><td>振幅约束</td><td>全像面替换</td><td class="mono">仅信号窗口内约束</td><td>窗外散斑不污染窗内</td></tr>
+          <tr><td>散斑抑制</td><td>无</td><td class="mono">MRAF 混合 m=0.8</td><td>RMSE 进一步下降</td></tr>
+          <tr><td>能量归一</td><td>隐式</td><td class="mono">窗内能量显式归一 s</td><td>避免能量被压出窗口</td></tr>
+          <tr><td>初始相位</td><td>单组</td><td class="mono">3 组随机取最优</td><td>降低陷入局部极小</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 START ================= -->
+<section id="start">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">05</span><span class="bar"></span>Quick Start</div>
+      <h2>跑起来</h2>
+      <p>Python 3.x + numpy + matplotlib + Pillow，三条命令出结果。</p>
+    </div>
+
+    <div class="codeblock rv">
+      <div class="codehead"><span>terminal</span>
+        <button class="copybtn" data-copy="#cmd">复制命令</button></div>
+      <pre id="cmd"><span class="c"># 1. 装依赖</span>
+pip install numpy matplotlib Pillow
+
+<span class="c"># 2. 设计 + 仿真 + 出图 + 指标 (~8 min)</span>
+python code/doe_design.py
+
+<span class="c"># 3. 生成自包含 HTML 报告</span>
+python code/gen_html_report_doe.py</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">06</span><span class="bar"></span>Download</div>
+      <h2>资源下载</h2>
+    </div>
+
+    <div class="dl-grid rv">
+      <div class="dl-card primary">
+        <div class="ver">SOURCE · GitHub</div>
+        <h3>源码与数据</h3>
+        <div class="sub">设计代码 + 相位数据 + 报告</div>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>Python 源码</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>DOE 相位数据 (.npz)</li>
+          <li><svg viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-7.5"/></svg>HTML 设计报告</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="https://github.com/Alice-P197/doe-image-reconstruction" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16"><path d="M8 1v9m0 0 3.5-3.5M8 10 4.5 6.5M2 11v3h12v-3"/></svg>前往仓库
+          </a>
+        </div>
+        <div class="meta-row"><span>main</span><span>λ=1.064µm</span><span>MIT</span></div>
+      </div>
+      <div class="dl-card">
+        <div class="ver">PARAMETERS</div>
+        <h3>可调参数</h3>
+        <div class="sub">脚本顶部参数区</div>
+        <div class="pathline">波长 / DOE尺寸 / 工作距离 / 目标尺寸</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 CITE ================= -->
+<section id="cite">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="kicker"><span class="num">07</span><span class="bar"></span>Citation &amp; Notes</div>
+      <h2>引用与声明</h2>
+    </div>
+
+    <div class="bibtex rv">
+      <button class="copybtn" data-copy="#bib">复制</button>
+      <pre id="bib">@article{gerchberg1972,
+  title   = {A practical algorithm for the determination of phase
+             from image and diffraction plane pictures},
+  author  = {Gerchberg, R. W. and Saxton, W. O.},
+  journal = {Optik},
+  volume  = {35},
+  pages   = {237--246},
+  year    = {1972}
+}</pre>
+    </div>
+
+    <div class="notes rv">
+      <p>本复现为独立实现，非官方代码。IFTA 基础方法源自 Gerchberg-Saxton (1972)，
+      MRAF 混合与信号窗口约束为本复现采用的改进策略。代码与结果仅用于学术研究与学习交流。</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="metae-former.html" title="上一篇">
+      <div class="dir">← 上一篇</div>
+      <div class="tt">MetaE-former</div>
+    </a>
+    <a class="next" href="slm-phase-optimization.html" title="下一篇">
+      <div class="dir">下一篇 →</div>
+      <div class="tt">SLM 旁瓣抑制</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">文献档案馆<span>Literature Archive</span></div>
+    <div class="foot-links">
+      <a href="../index.html#archive">全部档案</a>
+      <a href="../guide.html">复现方法</a>
+      <a href="https://github.com/Alice-P197" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><span class="close">×</span><img id="lbimg" alt=""></div>
+<div class="toast" id="toast">已复制</div>
+
+<script src="../assets/js/site.js"></script>
+</body>
+</html>
